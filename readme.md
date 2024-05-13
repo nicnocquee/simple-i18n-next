@@ -1,4 +1,4 @@
-# next-i18n
+# simple-i18n-next
 
 This is a CLI to generate TypeScript code from translation files in JSON format and Markdown files for [Next.js](https://nextjs.org/) projects.
 
@@ -60,7 +60,7 @@ and a `locales/de/about.mdx` file that contains the following content:
 Diese Seite ist die Übersicht.
 ```
 
-5. Finally, run the `npx next-i18n` command in your project directory. This command will generate TypeScript code inside the `locales/.generated` directory that you can use in your Next.js project.
+5. Finally, run the `npx simple-i18n-next` command in your project directory. This command will generate TypeScript code inside the `locales/.generated` directory that you can use in your Next.js project.
 
 6. You might need to add the generated directory to your `tsconfig.json` file:
 
@@ -76,12 +76,12 @@ Diese Seite ist die Übersicht.
 locales/.generated
 ```
 
-8. Update the package.json scripts to include the `next-i18n` command:
+8. Update the package.json scripts to include the `simple-i18n-next` command:
 
 ```json
 {
   "scripts": {
-    "generate-locales": "next-i18n -i ./locales",
+    "generate-locales": "simple-i18n-next -i ./locales",
     "dev": "npm run generate-locales && next dev",
     "build": "npm run generate-locales && next build",
     "start": "next start"
@@ -202,26 +202,26 @@ Please make sure that you have set up your Next.js project to use Markdown and M
 ## Install
 
 ```bash
-npm i -g next-i18n
+npm i -g simple-i18n-next
 ```
 
 Or you can run the command directly:
 
 ```shell
-npx next-i18n -i ./locales
+npx simple-i18n-next -i ./locales
 ```
 
 ## CLI
 
 ```
   Usage
-    $ next-i18n [input]
+    $ simple-i18n-next [input]
 
   Options
     --input, -i <type> The path to the locales directory.  [Default: ./locales]
 
   Examples
-    $ next-i18n -i ./locales
+    $ simple-i18n-next -i ./locales
 ```
 
 ## Development

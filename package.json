@@ -1,11 +1,11 @@
 {
-  "name": "next-i18n",
+  "name": "simple-i18n-next",
   "version": "0.0.1",
   "license": "MIT",
   "bin": {
-    "next-i18n": "dist/cli.js"
+    "simple-i18n-next": "dist/cli.js"
   },
-  "url": "https://github.com/nicnocquee/next-i18n",
+  "url": "https://github.com/nicnocquee/simple-i18n-next",
   "type": "module",
   "engines": {
     "node": ">=16"
@@ -14,7 +14,7 @@
     "i18n",
     "internationalization",
     "nextjs",
-    "next-i18n",
+    "simple-i18n-next",
     "translation",
     "localization",
     "l10n",

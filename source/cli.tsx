@@ -7,13 +7,13 @@ import { generateLocale } from './generate-locale.js'
 const cli = meow(
   `
   Usage
-    $ next-i18n [input]
+    $ simple-i18n-next [input]
 
   Options
     --input, -i <type> The path to the locales directory.  [Default: ./locales]
     
   Examples
-    $ next-i18n -i ./locales
+    $ simple-i18n-next -i ./locales
 `,
   {
     importMeta: import.meta,
