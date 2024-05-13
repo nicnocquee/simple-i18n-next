@@ -1,5 +1,6 @@
 {
   "name": "simple-i18n-next",
+  "description": "A CLI to generate TypeScript code from translation files in JSON format and Markdown files for Next.js projects.",
   "version": "0.0.2",
   "license": "MIT",
   "bin": {
