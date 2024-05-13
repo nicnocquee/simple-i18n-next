@@ -1,0 +1,78 @@
+{
+  "name": "next-i18n",
+  "version": "0.0.0",
+  "license": "MIT",
+  "bin": {
+    "next-i18n": "dist/cli.js"
+  },
+  "url": "https://github.com/nicnocquee/next-i18n",
+  "type": "module",
+  "engines": {
+    "node": ">=16"
+  },
+  "keywords": [
+    "i18n",
+    "internationalization",
+    "nextjs",
+    "next-i18n",
+    "translation",
+    "localization",
+    "l10n",
+    "i10n",
+    "react",
+    "typescript",
+    "ts",
+    "tsx",
+    "markdown",
+    "mdx",
+    "cli",
+    "command line",
+    "tool",
+    "utility"
+  ],
+  "scripts": {
+    "build": "rimraf dist && tsc && npm run copy-files",
+    "dev": "tsc --watch",
+    "test": "prettier --check . && xo && ava",
+    "copy-files": "copyfiles -f readme.md LICENSE dist/",
+    "bump": "npm version patch --force",
+    "prepublishOnly": "npm run bump && npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "meow": "^13.2.0"
+  },
+  "devDependencies": {
+    "@sindresorhus/tsconfig": "^5.0.0",
+    "@vdemedes/prettier-config": "^2.0.1",
+    "ava": "^6.1.2",
+    "concurrently": "^8.2.2",
+    "copyfiles": "^2.4.1",
+    "eslint-config-xo-react": "^0.27.0",
+    "prettier": "^3.2.5",
+    "rimraf": "^5.0.5",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.9.1",
+    "typescript": "^5.4.5",
+    "xo": "^0.58.0"
+  },
+  "ava": {
+    "extensions": {
+      "ts": "module",
+      "tsx": "module"
+    },
+    "nodeArguments": [
+      "--loader=ts-node/esm"
+    ]
+  },
+  "xo": {
+    "extends": "xo-react",
+    "prettier": true,
+    "rules": {
+      "react/prop-types": "off"
+    }
+  }
+}
