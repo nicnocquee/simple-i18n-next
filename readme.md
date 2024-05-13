@@ -222,6 +222,24 @@ export default function HomePage({ params: { lang } }: { params: { lang: Support
 
 The generated function is fully typed so you have to pass the correct variable name to the function as shown above.
 
+In a client component, you can use the interpolated variable like this:
+
+```tsx
+'use client'
+import { interpolateTemplate } from '@/locales/.generated/server'
+
+export default function ClientComponent() {
+  const strings = useStrings(['bye', 'home'])
+  if (!strings) return null
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-between p-24">
+      <h1>{interpolateTemplate(strings.bye, { name: 'John' })}</h1>
+      <Link href={`/`}>{strings.home}</Link>
+    </div>
+  )
+}
+```
+
 In the markdown file, you can use the interpolated variable like this:
 
 ```mdx
@@ -245,6 +263,10 @@ export default function HomePage({ params: { lang } }: { params: { lang: Support
   )
 }
 ```
+
+## Example
+
+You can checkout the sample Next.js project that uses this CLI [here](https://github.com/nicnocquee/simple-i18n-next-example).
 
 ## Install
 
