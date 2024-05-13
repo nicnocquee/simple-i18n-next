@@ -1,4 +1,4 @@
-# simple-i18n-next
+# simple-i18n-next [BETA]
 
 This is a CLI to generate TypeScript code from translation files in JSON format and Markdown files for [Next.js](https://nextjs.org/) projects.
 
