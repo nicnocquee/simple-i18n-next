@@ -199,6 +199,53 @@ export default function HomePage({ params: { lang } }: { params: { lang: Support
 
 Please make sure that you have set up your Next.js project to use Markdown and MDX by following the [official documentation](https://nextjs.org/docs/app/building-your-application/configuring/mdx).
 
+### Interpolation
+
+In the `messages.json` file, you can use interpolation by using the `{{variable_name}}` syntax. For example, you can create a `locales/en/messages.json` file that contains the following content:
+
+```json
+{
+  "hello": "Hello, {{name}}!"
+}
+```
+
+In the `page.tsx` file, you can use the interpolated variable like this:
+
+```tsx
+// app/[lang]/page.tsx
+import { hello, SupportedLanguage } from 'locales/.generated/server'
+
+export default function HomePage({ params: { lang } }: { params: { lang: SupportedLanguage } }) {
+  return <div>{hello(lang, { name: 'Nico' })}</div>
+}
+```
+
+The generated function is fully typed so you have to pass the correct variable name to the function as shown above.
+
+In the markdown file, you can use the interpolated variable like this:
+
+```mdx
+# About
+
+This is the about page. My name is {props.name}
+```
+
+Then in the `page.tsx` file, you can use the markdown component like this:
+
+```tsx
+// app/[lang]/page.tsx
+import { SupportedLanguage } from '@/locales/.generated/server'
+import { About } from 'locales/.generated/locales-markdown'
+
+export default function HomePage({ params: { lang } }: { params: { lang: SupportedLanguage } }) {
+  return (
+    <div>
+      <About lang={lang} name="Nico" />
+    </div>
+  )
+}
+```
+
 ## Install
 
 ```bash
