@@ -11,6 +11,7 @@ const cli = meow(
 
   Options
     --input, -i <type> The path to the locales directory.  [Default: ./locales]
+    --default-language, -l <type> The default language to use.  [Default: the first directory in the locales directory]
     
   Examples
     $ simple-i18n-next -i ./locales
@@ -19,6 +20,11 @@ const cli = meow(
     importMeta: import.meta,
     flags: {
       input: { type: 'string', shortFlag: 'i', default: './locales' },
+      defaultLanguage: {
+        aliases: ['default-language'],
+        type: 'string',
+        shortFlag: 'l',
+      },
     },
   }
 )
@@ -30,4 +36,4 @@ if (!fs.existsSync(localeDirPath)) {
   process.exit(1)
 }
 
-generateLocale({ localesDir: localeDirPath })
+generateLocale({ localesDir: localeDirPath, defaultLanguage: cli.flags.defaultLanguage })

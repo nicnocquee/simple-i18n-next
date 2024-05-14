@@ -3,8 +3,10 @@ import path from 'path'
 
 export function generateLocale({
   localesDir = path.join(process.cwd(), 'locales'),
+  defaultLanguage,
 }: {
   localesDir: string
+  defaultLanguage?: string
 }) {
   // Capitalize the first letter of a string
   const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
@@ -17,7 +19,7 @@ export function generateLocale({
 
   // Define the locales directory and supported languages
   const langs: Array<string> = getDirectories(localesDir)
-  const baseLang = langs[0] as (typeof langs)[number]
+  const baseLang = defaultLanguage || (langs[0] as (typeof langs)[number])
 
   // Read and parse the base language messages
   const baseMessagesString = fs.readFileSync(
@@ -91,7 +93,7 @@ export function generateLocale({
     return theText
   }`,
     `export type SupportedLanguage = ${langs.map((lang) => `'${lang}'`).join(' | ')};
-  export const defaultLanguage: SupportedLanguage = '${langs[0]}';
+  export const defaultLanguage: SupportedLanguage = '${baseLang}';
   `,
   ]
   const localeFunctions: string[] = [...shared]

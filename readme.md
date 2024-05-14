@@ -288,6 +288,7 @@ npx simple-i18n-next -i ./locales
 
   Options
     --input, -i <type> The path to the locales directory.  [Default: ./locales]
+    --default-language, -l <type> The default language to use.  [Default: the first directory in the locales directory]
 
   Examples
     $ simple-i18n-next -i ./locales
@@ -298,7 +299,7 @@ npx simple-i18n-next -i ./locales
 Run
 
 ```bash
-npx tsx source/cli.tsx -i "./__tests__/.env"
+npx tsx source/cli.tsx -i "./locales"
 ```
 
 ## License
