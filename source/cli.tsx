@@ -1,7 +1,7 @@
 #!/usr/bin/env node
+import fs from 'node:fs'
+import path from 'node:path'
 import meow from 'meow'
-import fs from 'fs'
-import path from 'path'
 import { generateLocale } from './generate-locale.js'
 
 const cli = meow(

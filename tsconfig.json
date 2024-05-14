@@ -3,5 +3,6 @@
   "compilerOptions": {
     "outDir": "dist"
   },
-  "include": ["source"]
+  "include": ["source"],
+  "exclude": ["locales/.generated/**/*", "locales/.expected-generated-dir/**/*"]
 }

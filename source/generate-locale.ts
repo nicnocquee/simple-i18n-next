@@ -1,5 +1,8 @@
-import fs from 'fs'
-import path from 'path'
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+
+import fs from 'node:fs'
+import path from 'node:path'
 
 export function generateLocale({
   localesDir = path.join(process.cwd(), 'locales'),
@@ -11,20 +14,20 @@ export function generateLocale({
   // Capitalize the first letter of a string
   const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
-  function getDirectories(currentPath: string): Array<string> {
+  function getDirectories(currentPath: string): string[] {
     return fs.readdirSync(currentPath).filter((file) => {
       return fs.statSync(path.join(currentPath, file)).isDirectory() && !file.startsWith('.')
     })
   }
 
   // Define the locales directory and supported languages
-  const langs: Array<string> = getDirectories(localesDir)
-  const baseLang = defaultLanguage || (langs[0] as (typeof langs)[number])
+  const langs: string[] = getDirectories(localesDir)
+  const baseLang = defaultLanguage ?? (langs[0] as (typeof langs)[number])
 
   // Read and parse the base language messages
   const baseMessagesString = fs.readFileSync(
     path.join(localesDir, baseLang, 'messages.json'),
-    'utf-8'
+    'utf8'
   )
   const baseMessagesJson = JSON.parse(baseMessagesString)
 
@@ -45,7 +48,7 @@ export function generateLocale({
   // Convert an array of strings to camelCase
   function arrayToCamelCase(arr: string[]): string {
     const expand = arr.flatMap((item) => {
-      const makeItSafe = item.replace(/[^a-zA-Z0-9]+/g, ' ')
+      const makeItSafe = item.replace(/[^a-zA-Z\d]+/g, ' ')
       const split = makeItSafe.split(' ')
       const capitalized = split.map((word) => capitalize(word.toLowerCase()))
       return capitalized
@@ -57,7 +60,7 @@ export function generateLocale({
   // Generate TypeScript prop types from a template string
   function generatePropTypes(template: string, functionName: string) {
     const regex = /{{\s*(\w+)\s*}}/g
-    const props: Set<string> = new Set()
+    const props = new Set<string>()
 
     let match
     while ((match = regex.exec(template)) !== null) {
@@ -70,9 +73,7 @@ export function generateLocale({
       return null
     }
 
-    const typeProps = Array.from(props)
-      .map((prop) => `  ${prop}: string;`)
-      .join('\n')
+    const typeProps = [...props].map((prop) => `  ${prop}: string;`).join('\n')
 
     return {
       name: `${functionName}Props`,
@@ -106,7 +107,7 @@ export function generateLocale({
 
   // Process each language and generate corresponding functions
   langs.forEach((lang) => {
-    const messagesString = fs.readFileSync(path.join(localesDir, lang, messagesFilename), 'utf-8')
+    const messagesString = fs.readFileSync(path.join(localesDir, lang, messagesFilename), 'utf8')
     const messagesJson = JSON.parse(messagesString)
 
     baseKeys.forEach((key) => {
@@ -115,6 +116,7 @@ export function generateLocale({
       if (!value) {
         errors.push(`Missing value for "${key}" in ${lang}`)
       }
+
       const content = `export const ${functionName} = ${JSON.stringify(value)}`
       localeFunctions.push(content)
 
@@ -131,15 +133,14 @@ export function generateLocale({
         propTypes[genericFunctionName] = propType
       }
 
-      if (!langFunctions[genericFunctionName]) {
-        langFunctions[genericFunctionName] = {}
-      }
+      langFunctions[genericFunctionName] ||= {}
       ;(langFunctions[genericFunctionName] as Record<string, string>)[lang] = functionName
     })
   })
 
   if (errors.length > 0) {
     console.error(errors.join('\n'))
+    // eslint-disable-next-line unicorn/no-process-exit
     process.exit(1)
   }
 
@@ -192,11 +193,11 @@ export function generateLocale({
   // Generate a React component from markdown content and file path
   const generateComponent = (markdownContent: string, filepath: string) => {
     // Regular expression to find {props.something}
-    const propMatches = markdownContent.match(/\{props\.(\w+)\}/g)
+    const propMatches = markdownContent.match(/{props\.(\w+)}/g)
 
     // If propMatches is null, set uniqueProps to an empty array
     const uniqueProps = propMatches
-      ? [...new Set(propMatches.map((m) => m.match(/props\.(\w+)/)?.[1]))]
+      ? [...new Set(propMatches.map((m) => /props\.(\w+)/.exec(m)?.[1]))]
       : []
 
     const componentName = componentNameFromFilepath(filepath.replace(localesDir, ''))
@@ -221,9 +222,12 @@ export function generateLocale({
       const entryPath = path.join(dir, entry.name)
       if (entry.isDirectory()) {
         return findMdxFiles(entryPath)
-      } else if (entry.isFile() && entry.name.endsWith('.mdx')) {
+      }
+
+      if (entry.isFile() && entry.name.endsWith('.mdx')) {
         return [entryPath]
       }
+
       return []
     })
     return files.flat()
@@ -234,7 +238,7 @@ export function generateLocale({
 
   const langComponents: Record<string, Record<string, string>> = {}
   mdxFiles.forEach((filepath) => {
-    const content = fs.readFileSync(filepath, 'utf-8')
+    const content = fs.readFileSync(filepath, 'utf8')
     const [lang, ...rest] = filepath
       .replace(localesDir, '')
       .split('/')
@@ -243,9 +247,7 @@ export function generateLocale({
 
     const baseComponentName = componentNameFromFilepath(rest.join('/'))
 
-    if (!langComponents[baseComponentName]) {
-      langComponents[baseComponentName] = {}
-    }
+    langComponents[baseComponentName] ||= {}
     ;(langComponents[baseComponentName] as Record<string, any>)[lang as string] = componentName
     localesMarkdownContent.push(componentString)
   })
