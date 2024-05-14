@@ -25,7 +25,7 @@ To get started:
 ```json
 {
   "hello": "Hello",
-  "welcome": "Welcome to {name}",
+  "welcome": "Welcome to {{name}}",
   "about": "About",
   "contact": "Contact",
   "coming_soon": "Coming soon"
@@ -37,7 +37,7 @@ and a `locales/de/messages.json` file that contains the following content:
 ```json
 {
   "hello": "Hallo",
-  "welcome": "Willkommen bei {name}",
+  "welcome": "Willkommen bei {{name}}",
   "about": "Über",
   "contact": "Kontakt",
   "coming_soon": "Bald kommen"
