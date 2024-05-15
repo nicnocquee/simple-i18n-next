@@ -13,14 +13,22 @@ function getDirectories(currentPath: string): string[] {
   })
 }
 
+function showLog(message: string, silent: boolean) {
+  if (!silent) {
+    console.log(message)
+  }
+}
+
 export function generateLocale({
   localesDir = path.join(process.cwd(), 'locales'),
   defaultLanguage,
   outputDir: outputDirPath,
+  silent,
 }: {
   localesDir: string
   defaultLanguage?: string
   outputDir?: string
+  silent: boolean
 }) {
   // Define the locales directory and supported languages
   const displayNames = new Intl.DisplayNames(['en'], { type: 'language' })
@@ -37,8 +45,9 @@ export function generateLocale({
   }
 
   if (invalidLangs.length > 0) {
-    console.log(
-      `Ignoring directory names that are not valid language codes: ${invalidLangs.join(', ')}`
+    showLog(
+      `Ignoring directory names that are not valid language codes: ${invalidLangs.join(', ')}`,
+      silent
     )
   }
 
@@ -46,7 +55,7 @@ export function generateLocale({
     throw new Error(`No valid language directories found in the ${localesDir} directory`)
   }
 
-  console.log(`Found ${langs.length} valid language directories in the ${localesDir} directory`)
+  showLog(`Found ${langs.length} valid language directories in the ${localesDir} directory`, silent)
 
   if (defaultLanguage && !langs.includes(defaultLanguage)) {
     throw new Error(

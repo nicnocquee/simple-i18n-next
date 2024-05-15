@@ -37,6 +37,7 @@ test('generateLocale without output directory', async (t) => {
   generateLocale({
     localesDir: path.resolve(process.cwd(), './test/locales'),
     defaultLanguage: 'en',
+    silent: true,
   })
   const identical = await compareDirectories(
     './test/locales/.generated',
@@ -50,6 +51,7 @@ test('generateLocale with output directory', async (t) => {
     localesDir: path.resolve(process.cwd(), './test/locales'),
     defaultLanguage: 'en',
     outputDir: './test/locales/.generated2',
+    silent: true,
   })
   const identical = await compareDirectories(
     './test/locales/.generated2',
@@ -64,6 +66,7 @@ test("generateLocale with defaultLanguage but doesn't exist in localesDir", (t) 
       localesDir: path.resolve(process.cwd(), './test/locales-invalid-dir'),
       defaultLanguage: 'de',
       outputDir: './test/locales-invalid-dir/.generated2',
+      silent: true,
     })
   })
   t.truthy(error)
@@ -74,6 +77,7 @@ test('generateLocale with invalid language code directory', async (t) => {
     localesDir: path.resolve(process.cwd(), './test/locales-invalid-dir'),
     defaultLanguage: 'en',
     outputDir: './test/locales-invalid-dir/.generated3',
+    silent: true,
   })
   const identical = await compareDirectories(
     './test/locales-invalid-dir/.generated3',

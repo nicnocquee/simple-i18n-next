@@ -27,6 +27,7 @@ const cli = meow(
         shortFlag: 'l',
       },
       output: { type: 'string', shortFlag: 'o' },
+      silent: { type: 'boolean', shortFlag: 's', default: false },
     },
   }
 )
@@ -42,4 +43,5 @@ generateLocale({
   localesDir: localeDirPath,
   defaultLanguage: cli.flags.defaultLanguage,
   outputDir: cli.flags.output,
+  silent: cli.flags.silent,
 })
