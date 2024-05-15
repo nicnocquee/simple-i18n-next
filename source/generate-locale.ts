@@ -19,6 +19,95 @@ function showLog(message: string, silent: boolean) {
   }
 }
 
+// Convert an array of strings to camelCase
+function arrayToCamelCase(arr: string[]): string {
+  const expand = arr.flatMap((item) => {
+    const makeItSafe = item.replace(/[^a-zA-Z\d]+/g, ' ')
+    const split = makeItSafe.split(' ')
+    const capitalized = split.map((word) => capitalize(word.toLowerCase()))
+    return capitalized
+  })
+  const camelCase = expand.join('')
+  return camelCase.charAt(0).toLowerCase() + camelCase.slice(1)
+}
+
+// Generate TypeScript prop types from a template string
+function generatePropTypes(template: string, functionName: string) {
+  const regex = /{{\s*(\w+)\s*}}/g
+  const props = new Set<string>()
+
+  let match
+  while ((match = regex.exec(template)) !== null) {
+    if (match[1]) {
+      props.add(match[1])
+    }
+  }
+
+  if (props.size === 0) {
+    return null
+  }
+
+  const typeProps = [...props].map((prop) => `  ${prop}: string;`).join('\n')
+
+  return {
+    name: `${functionName}Props`,
+    content: `type ${functionName}Props = {\n${typeProps}\n}`,
+  }
+}
+
+// Generate component name from file path
+function componentNameFromFilepath(filepath: string) {
+  const parts = filepath
+    .split('/')
+    .filter((p) => p.trim() !== '.')
+    .map((p) => p.replace('.mdx', ''))
+  const cameledCase = arrayToCamelCase(parts)
+  return cameledCase.charAt(0).toUpperCase() + cameledCase.slice(1)
+}
+
+// Find all .mdx files recursively in a directory
+function findMdxFiles(dir: string): string[] {
+  const entries = fs.readdirSync(dir, { withFileTypes: true })
+  const files = entries.map((entry) => {
+    const entryPath = path.join(dir, entry.name)
+    if (entry.isDirectory()) {
+      return findMdxFiles(entryPath)
+    }
+
+    if (entry.isFile() && entry.name.endsWith('.mdx')) {
+      return [entryPath]
+    }
+
+    return []
+  })
+  return files.flat()
+}
+
+// Generate a React component from markdown content and file path
+const generateComponent = (markdownContent: string, filepath: string, localesDir: string) => {
+  // Regular expression to find {props.something}
+  const propMatches = markdownContent.match(/{props\.(\w+)}/g)
+
+  // If propMatches is null, set uniqueProps to an empty array
+  const uniqueProps = propMatches
+    ? [...new Set(propMatches.map((m) => /props\.(\w+)/.exec(m)?.[1]))]
+    : []
+
+  const componentName = componentNameFromFilepath(filepath.replace(localesDir, ''))
+  const imports = `import ${componentName}Markdown from '${filepath.replace(localesDir, '..')}';\n`
+  let typeDefs = ''
+  const component = `const ${componentName} = (props: ComponentProps<typeof ${componentName}Markdown>${uniqueProps.length > 0 ? ' & ' + componentName + 'Props' : ''}) => <${componentName}Markdown {...props} />;`
+
+  if (uniqueProps.length > 0) {
+    typeDefs = `type ${componentName}Props = {\n  ${uniqueProps.map((prop) => `${prop}: string;`).join('\n  ')}\n}\n`
+  }
+
+  return {
+    componentName,
+    componentString: `${imports}${typeDefs}${component}`,
+  }
+}
+
 export function generateLocale({
   localesDir = path.join(process.cwd(), 'locales'),
   defaultLanguage,
@@ -88,42 +177,6 @@ export function generateLocale({
   langs.forEach((lang) => {
     fs.mkdirSync(path.join(clientOutputDir, lang), { recursive: true })
   })
-
-  // Convert an array of strings to camelCase
-  function arrayToCamelCase(arr: string[]): string {
-    const expand = arr.flatMap((item) => {
-      const makeItSafe = item.replace(/[^a-zA-Z\d]+/g, ' ')
-      const split = makeItSafe.split(' ')
-      const capitalized = split.map((word) => capitalize(word.toLowerCase()))
-      return capitalized
-    })
-    const camelCase = expand.join('')
-    return camelCase.charAt(0).toLowerCase() + camelCase.slice(1)
-  }
-
-  // Generate TypeScript prop types from a template string
-  function generatePropTypes(template: string, functionName: string) {
-    const regex = /{{\s*(\w+)\s*}}/g
-    const props = new Set<string>()
-
-    let match
-    while ((match = regex.exec(template)) !== null) {
-      if (match[1]) {
-        props.add(match[1])
-      }
-    }
-
-    if (props.size === 0) {
-      return null
-    }
-
-    const typeProps = [...props].map((prop) => `  ${prop}: string;`).join('\n')
-
-    return {
-      name: `${functionName}Props`,
-      content: `type ${functionName}Props = {\n${typeProps}\n}`,
-    }
-  }
 
   // Shared content for generated files
   const shared: string[] = [
@@ -222,59 +275,6 @@ export function generateLocale({
   // Write the server locale functions to a file
   fs.writeFileSync(outputFile, localeFunctions.join('\n'))
 
-  // Generate component name from file path
-  function componentNameFromFilepath(filepath: string) {
-    const parts = filepath
-      .split('/')
-      .filter((p) => p.trim() !== '.')
-      .map((p) => p.replace('.mdx', ''))
-    const cameledCase = arrayToCamelCase(parts)
-    return cameledCase.charAt(0).toUpperCase() + cameledCase.slice(1)
-  }
-
-  // Generate a React component from markdown content and file path
-  const generateComponent = (markdownContent: string, filepath: string) => {
-    // Regular expression to find {props.something}
-    const propMatches = markdownContent.match(/{props\.(\w+)}/g)
-
-    // If propMatches is null, set uniqueProps to an empty array
-    const uniqueProps = propMatches
-      ? [...new Set(propMatches.map((m) => /props\.(\w+)/.exec(m)?.[1]))]
-      : []
-
-    const componentName = componentNameFromFilepath(filepath.replace(localesDir, ''))
-    const imports = `import ${componentName}Markdown from '${filepath.replace(localesDir, '..')}';\n`
-    let typeDefs = ''
-    const component = `const ${componentName} = (props: ComponentProps<typeof ${componentName}Markdown>${uniqueProps.length > 0 ? ' & ' + componentName + 'Props' : ''}) => <${componentName}Markdown {...props} />;`
-
-    if (uniqueProps.length > 0) {
-      typeDefs = `type ${componentName}Props = {\n  ${uniqueProps.map((prop) => `${prop}: string;`).join('\n  ')}\n}\n`
-    }
-
-    return {
-      componentName,
-      componentString: `${imports}${typeDefs}${component}`,
-    }
-  }
-
-  // Find all .mdx files recursively in a directory
-  function findMdxFiles(dir: string): string[] {
-    const entries = fs.readdirSync(dir, { withFileTypes: true })
-    const files = entries.map((entry) => {
-      const entryPath = path.join(dir, entry.name)
-      if (entry.isDirectory()) {
-        return findMdxFiles(entryPath)
-      }
-
-      if (entry.isFile() && entry.name.endsWith('.mdx')) {
-        return [entryPath]
-      }
-
-      return []
-    })
-    return files.flat()
-  }
-
   const mdxFiles = findMdxFiles(path.join(localesDir, '.'))
   const localesMarkdownContent: string[] = [`import { ComponentProps } from 'react';`]
 
@@ -285,7 +285,7 @@ export function generateLocale({
       .replace(localesDir, '')
       .split('/')
       .filter((p) => p.trim() !== '')
-    const { componentName, componentString } = generateComponent(content, filepath)
+    const { componentName, componentString } = generateComponent(content, filepath, localesDir)
 
     const baseComponentName = componentNameFromFilepath(rest.join('/'))
 
@@ -340,65 +340,67 @@ export function generateLocale({
   fs.writeFileSync(markdownOutputFile, markdownComponentContent)
 
   // Generate hooks for using strings
-  const hooks = `
-  import { StringKeys, SupportedLanguage, defaultLanguage } from "../server";
-  import { useState, useMemo, useEffect } from "react";
-  
-  export const useStrings = <T extends StringKeys>(
-    keys: T[],
-    lang: SupportedLanguage = defaultLanguage
-  ): Record<T, string> | null => {
-    const [strings, setStrings] = useState<Record<T, string> | null>(null);
-  
-    const memoizedKeys = useMemo(() => keys, [...keys]);
-    const memoizedLang = useMemo(() => lang, [lang]);
-  
-    useEffect(() => {
-      let isCleanedup = false;
-      const controller = new AbortController();
-      const signal = controller.signal;
-  
-      async function loadLocale() {
-        try {
-          const data = await Promise.all(
-            memoizedKeys.map(async (key) => {
-              const importedModule = await import(\`./\${memoizedLang}/\${key}.tsx\`);
-              if (signal.aborted && !isCleanedup) return null;
-              return { key, data: importedModule.default };
-            })
-          );
-  
-          if (!signal.aborted) {
-            setStrings(
-              data.reduce(
-                (acc, cur) => (cur ? { ...acc, [cur.key]: cur.data } : acc),
-                {} as Record<T, string>
-              )
-            );
-          }
-        } catch (error) {
-          if (!isCleanedup) {
-            if (signal.aborted) {
-              console.log("Fetch aborted");
-            } else {
-              console.error("Error loading locale", error);
-            }
-          }
-        }
-      }
-  
-      loadLocale();
-  
-      return () => {
-        isCleanedup = true;
-        controller.abort();
-      };
-    }, [memoizedLang, memoizedKeys]);
-  
-    return strings;
-  };
-  
-`
+
   const hooksOutputFile = path.join(clientOutputDir, 'hooks.tsx')
   fs.writeFileSync(hooksOutputFile, hooks)
 }
+
+const hooks = `
+import { StringKeys, SupportedLanguage, defaultLanguage } from "../server";
+import { useState, useMemo, useEffect } from "react";
+
+export const useStrings = <T extends StringKeys>(
+  keys: T[],
+  lang: SupportedLanguage = defaultLanguage
+): Record<T, string> | null => {
+  const [strings, setStrings] = useState<Record<T, string> | null>(null);
+
+  const memoizedKeys = useMemo(() => keys, [...keys]);
+  const memoizedLang = useMemo(() => lang, [lang]);
+
+  useEffect(() => {
+    let isCleanedup = false;
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    async function loadLocale() {
+      try {
+        const data = await Promise.all(
+          memoizedKeys.map(async (key) => {
+            const importedModule = await import(\`./\${memoizedLang}/\${key}.tsx\`);
+            if (signal.aborted && !isCleanedup) return null;
+            return { key, data: importedModule.default };
+          })
+        );
+
+        if (!signal.aborted) {
+          setStrings(
+            data.reduce(
+              (acc, cur) => (cur ? { ...acc, [cur.key]: cur.data } : acc),
+              {} as Record<T, string>
+            )
+          );
+        }
+      } catch (error) {
+        if (!isCleanedup) {
+          if (signal.aborted) {
+            console.log("Fetch aborted");
+          } else {
+            console.error("Error loading locale", error);
+          }
+        }
+      }
+    }
+
+    loadLocale();
+
+    return () => {
+      isCleanedup = true;
+      controller.abort();
+    };
+  }, [memoizedLang, memoizedKeys]);
+
+  return strings;
+};
+
+`

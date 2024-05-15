@@ -2,7 +2,7 @@
 
 This is a CLI to generate TypeScript code from translation files in JSON format and Markdown files for [Next.js](https://nextjs.org/) projects.
 
-Note that this CLI is still WIP.
+Note that this CLI is still WIP. It means every update might break your project.
 
 ## Why?
 
