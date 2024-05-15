@@ -13,6 +13,7 @@ const cli = meow(
     --input, -i <type> The path to the locales directory.  [Default: ./locales]
     --default-language, -l <type> The default language to use.  [Default: the first directory in the locales directory]
     --output, -o <type> The path to the output directory.  [Default: <input>/.generated]
+    --silent, -s <type> Do not show any output.  [Default: false]
 
   Examples
     $ simple-i18n-next -i ./locales

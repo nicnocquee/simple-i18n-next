@@ -19,7 +19,7 @@ The existing solutions for internationalization (i18n) in Next.js are too compli
 To get started:
 
 1. Create a `locales` directory in your Next.js project. This directory will contain the translation files in JSON format and Markdown files.
-2. For each language you want to support, create a new directory in the `locales` directory. The name of the directory will be the language code. For example, if you want to support English, French, and Italian, you will create the following directories: `en`, `fr`, and `it`.
+2. For each language you want to support, create a new directory in the `locales` directory. The name of the directory must be one of the v[alid language codes](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). For example, if you want to support English, French, and Italian, you will create the following directories: `en`, `fr`, and `it`.
 3. In each language directory, create a `messages.json` file. This file will contain the translations for the language. For example, you can create a `locales/en/messages.json` file that contains the following content:
 
 ```json
@@ -290,6 +290,7 @@ npx simple-i18n-next -i ./locales
     --input, -i <type> The path to the locales directory.  [Default: ./locales]
     --default-language, -l <type> The default language to use.  [Default: the first directory in the locales directory]
     --output, -o <type> The path to the output directory.  [Default: ./locales/.generated]
+    --silent, -s <type> Do not show any output.  [Default: false]
 
   Examples
     $ simple-i18n-next -i ./locales
