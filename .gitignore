@@ -1,4 +1,6 @@
 node_modules
 dist
 public
-locales/.generated
+locales/.generated*
+test/locales/.generated*
+test/locales-invalid-dir/.generated*

@@ -4,24 +4,56 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+// Capitalize the first letter of a string
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
+
+function getDirectories(currentPath: string): string[] {
+  return fs.readdirSync(currentPath).filter((file) => {
+    return fs.statSync(path.join(currentPath, file)).isDirectory() && !file.startsWith('.')
+  })
+}
+
 export function generateLocale({
   localesDir = path.join(process.cwd(), 'locales'),
   defaultLanguage,
+  outputDir: outputDirPath,
 }: {
   localesDir: string
   defaultLanguage?: string
+  outputDir?: string
 }) {
-  // Capitalize the first letter of a string
-  const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
-
-  function getDirectories(currentPath: string): string[] {
-    return fs.readdirSync(currentPath).filter((file) => {
-      return fs.statSync(path.join(currentPath, file)).isDirectory() && !file.startsWith('.')
-    })
+  // Define the locales directory and supported languages
+  const displayNames = new Intl.DisplayNames(['en'], { type: 'language' })
+  const dirNames: string[] = getDirectories(localesDir)
+  const invalidLangs: string[] = []
+  const langs: string[] = []
+  for (const dirName of dirNames) {
+    const name = displayNames.of(dirName)
+    if (name === dirName) {
+      invalidLangs.push(dirName)
+    } else {
+      langs.push(dirName)
+    }
   }
 
-  // Define the locales directory and supported languages
-  const langs: string[] = getDirectories(localesDir)
+  if (invalidLangs.length > 0) {
+    console.log(
+      `Ignoring directory names that are not valid language codes: ${invalidLangs.join(', ')}`
+    )
+  }
+
+  if (langs.length === 0) {
+    throw new Error(`No valid language directories found in the ${localesDir} directory`)
+  }
+
+  console.log(`Found ${langs.length} valid language directories in the ${localesDir} directory`)
+
+  if (defaultLanguage && !langs.includes(defaultLanguage)) {
+    throw new Error(
+      `You specified a default language of ${defaultLanguage} but it does not exist in the ${localesDir} directory`
+    )
+  }
+
   const baseLang = defaultLanguage ?? (langs[0] as (typeof langs)[number])
 
   // Read and parse the base language messages
@@ -32,7 +64,10 @@ export function generateLocale({
   const baseMessagesJson = JSON.parse(baseMessagesString)
 
   // Define the output directories and files
-  const outputDir = path.join(localesDir, '.generated')
+  const outputDir = outputDirPath
+    ? path.resolve(outputDirPath)
+    : path.resolve(localesDir, '.generated')
+
   const clientOutputDir = path.join(outputDir, 'client')
   const outputFile = path.join(outputDir, 'server.ts')
   const markdownOutputFile = path.join(outputDir, 'locales-markdown.tsx')
@@ -139,9 +174,7 @@ export function generateLocale({
   })
 
   if (errors.length > 0) {
-    console.error(errors.join('\n'))
-    // eslint-disable-next-line unicorn/no-process-exit
-    process.exit(1)
+    throw new Error(errors.join('\n') || 'Something wrong')
   }
 
   // Generate locale functions
