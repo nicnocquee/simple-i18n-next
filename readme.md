@@ -15,6 +15,7 @@ The existing solutions for internationalization (i18n) in Next.js are too compli
 - In RSC, the translations are generated inline, so no JS code is sent to the client.
 - In client components, if you use the generated `useStrings` hook, only the translation strings that you need will be sent to the client. There will be no unused translations sent to the client.
 - You can use markdown files and use them as React components.
+- Support for plurals!
 
 ## Install
 
@@ -182,7 +183,7 @@ export default function ComingSoonPage({
 import { useStrings } from '@/locales/.generated/client/hooks'
 
 export default function HomePage() {
-  const { hello, comingSoon } = useStrings(['hello', 'comingSoon']) // the keys are typed! You cannot pass an invalid key.
+  const [{ hello, comingSoon }] = useStrings(['hello', 'comingSoon']) // the keys are typed! You cannot pass an invalid key.
 
   return (
     <div>
@@ -259,7 +260,7 @@ In a client component, you can use the interpolated variable like this:
 import { interpolateTemplate } from '@/locales/.generated/server'
 
 export default function ClientComponent() {
-  const strings = useStrings(['bye', 'home'])
+  const [strings] = useStrings(['bye', 'home'])
   if (!strings) return null
   return (
     <div className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -294,9 +295,160 @@ export default function HomePage({ params: { lang } }: { params: { lang: Support
 }
 ```
 
+### Plurals
+
+This CLI also generates code for plurals for both [ordinal and cardinal numbers](https://en.wikipedia.org/wiki/Ordinal_numeral). You need to add one of the following suffixes to let the script know that you want to use plurals: `_one`, `_two`, `_few`, `_many`, `_other`, or `_zero` for cardinal numbers, and `_ordinal_one`, `_ordinal_two`, `_ordinal_few`, `_ordinal_many`, `_ordinal_other`, or `_ordinal_zero` for ordinal numbers. You can read more about these plural rules from the [CLDR website](https://cldr.unicode.org/index/cldr-spec/plural-rules).
+
+For example, you can create a `locales/en/messages.json` file that contains the following content:
+
+```json:locales/en/messages.json
+{
+  "book_one": "One book",
+  "book_other": "{{count}} books",
+  "movie_ordinal_one": "1st movie",
+  "movie_ordinal_two": "2nd movie",
+  "movie_ordinal_few": "3rd movie",
+  "movie_ordinal_other": "{{count}}th movie"
+}
+```
+
+and a `locales/de/messages.json` file that contains the following content:
+
+```json:locales/de/messages.json
+{
+  "book_one": "Ein Buch",
+  "book_other": "{{count}} Bücher",
+  "movie_ordinal_other": "{{count}}. Film"
+}
+```
+
+Then in the RSC component like `page.tsx`, you can use the generated function like this:
+
+```tsx:page.tsx
+import {
+  SupportedLanguage,
+  bookWithCount,
+  movieWithOrdinalCount,
+} from "@/locales/.generated/server";
+export default function Home({
+  params: { lang },
+}: Readonly<{ params: { lang: SupportedLanguage } }>) {
+  return (
+    <main>
+      <div>
+        <p>{movieWithOrdinalCount(lang, 1)}</p>
+        <p>{movieWithOrdinalCount(lang, 2)}</p>
+        <p>{movieWithOrdinalCount(lang, 3)}</p>
+        <p>{movieWithOrdinalCount(lang, 4)}</p>
+        <p>{movieWithOrdinalCount(lang, 5)}</p>
+      </div>
+      <div>
+        <p>{bookWithCount(lang, 1)}</p>
+        <p>{bookWithCount(lang, 2)}</p>
+        <p>{bookWithCount(lang, 3)}</p>
+        <p>{bookWithCount(lang, 4)}</p>
+        <p>{bookWithCount(lang, 5)}</p>
+      </div>
+    </main>
+  )
+}
+```
+
+which will render the following HTML when the language is German (`de`):
+
+```html
+<main>
+  <div>
+    <p>1. Film</p>
+    <p>2. Film</p>
+    <p>3. Film</p>
+    <p>4. Film</p>
+    <p>5. Film</p>
+  </div>
+  <div>
+    <p>1 Buch</p>
+    <p>2 Bücher</p>
+    <p>3 Bücher</p>
+    <p>4 Bücher</p>
+    <p>5 Bücher</p>
+  </div>
+</main>
+```
+
+and when the language is English (`en`):
+
+```html
+<main>
+  <div>
+    <p>1st movie</p>
+    <p>2nd movie</p>
+    <p>3rd movie</p>
+    <p>4th movie</p>
+    <p>5th movie</p>
+  </div>
+  <div>
+    <p>One book</p>
+    <p>2 books</p>
+    <p>3 books</p>
+    <p>4 books</p>
+    <p>5 books</p>
+  </div>
+</main>
+```
+
+In a client component, you can use the generated function like this:
+
+```tsx:client/page.tsx
+"use client";
+
+import { useStrings } from "@/locales/.generated/client/hooks";
+
+export default function ClientComponent() {
+  const lang = useSelectedLanguageFromPathname();
+  const [, plurals] = useStrings(
+    [
+      "bookWithCount",
+      "movieWithOrdinalCount",
+    ],
+    lang
+  );
+  if (!plurals) return null;
+  return (
+    <div>
+      <div>
+        <p>{plurals.bookWithCount(1)}</p>
+        <p>{plurals.bookWithCount(2)}</p>
+        <p>{plurals.bookWithCount(3)}</p>
+        <p>{plurals.bookWithCount(4)}</p>
+        <p>{plurals.bookWithCount(5)}</p>
+      </div>
+
+      <div>
+        <p>{plurals.movieWithOrdinalCount(1)}</p>
+        <p>{plurals.movieWithOrdinalCount(2)}</p>
+        <p>{plurals.movieWithOrdinalCount(3)}</p>
+        <p>{plurals.movieWithOrdinalCount(4)}</p>
+        <p>{plurals.movieWithOrdinalCount(5)}</p>
+      </div>
+    </div>
+  )
+}
+```
+
+Note that the plural rules for cardinal and ordinal numbers for a given language can be different. For example, in English, the plural rule for cardinal numbers is `one` and `other`, while the plural rule for ordinal numbers is `one`, `two`, `few`, and `other`. On the other hand, in German, the plural rule for cardinal numbers is `one` and `other`, while the plural rule for ordinal numbers is only `other`.
+
+When you run the script, it will automatically check if the keys for the plurals are valid and complete. For example, if you have a key `book_one` but not `book_other` in the English `messages.json`, the script will throw an error. This way, you can ensure that you don't forget to add a plural rule for a given language. You can find out the plural rules for a given language by executing the following statement in the Node.js REPL or browser console:
+
+```javascript
+// plural rules for ordinal numbers in German
+new Intl.PluralRules('de', { type: 'ordinal' }).resolvedOptions().pluralCategories
+// plural rules for cardinal numbers in German
+new Intl.PluralRules('de').resolvedOptions().pluralCategories
+```
+
 ## Example
 
-You can checkout the sample Next.js project that uses this CLI [here](https://github.com/nicnocquee/simple-i18n-next-example).
+You can checkout the sample Next.js project that uses this CLI [in this repository](https://github.com/nicnocquee/simple-i18n-next-example).
 
 ## Development
 
