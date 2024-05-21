@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-await-in-loop */
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import crypto from 'node:crypto'
 import test from 'ava'
-import { generateLocale } from '../source/generate-locale.js'
+import { generateLocale, Plurals } from '../source/generate-locale.js'
 
 test.before(async () => {
   try {
@@ -85,6 +86,297 @@ test('generateLocale with invalid language code directory', async (t) => {
   )
   t.true(identical)
 })
+
+test('getPluralKeys no missing', (t) => {
+  const plurals = new Plurals('en')
+
+  plurals.storePluralKeyIfNeeded('hello', 'hello')
+  plurals.storePluralKeyIfNeeded('item_other', 'item')
+  plurals.storePluralKeyIfNeeded('item_one', 'item')
+  plurals.storePluralKeyIfNeeded('cat_other', 'cat')
+  plurals.storePluralKeyIfNeeded('cat_one', 'cat')
+
+  const { pluralKeys, incompletePluralKeys } = plurals.getPluralKeys()
+
+  t.true(
+    objectsEqualIgnoringOrder(pluralKeys, {
+      item: [
+        ['other', 'item'],
+        ['one', 'item'],
+      ],
+      cat: [
+        ['other', 'cat'],
+        ['one', 'cat'],
+      ],
+    })
+  )
+  t.deepEqual(incompletePluralKeys, {})
+})
+
+test('getPluralKeys with missing english', (t) => {
+  const plurals = new Plurals('en')
+
+  plurals.storePluralKeyIfNeeded('hello', 'hello')
+  plurals.storePluralKeyIfNeeded('item_other', 'item')
+  plurals.storePluralKeyIfNeeded('item_one', 'item')
+  plurals.storePluralKeyIfNeeded('cat_one', 'cat')
+
+  const { pluralKeys, incompletePluralKeys } = plurals.getPluralKeys()
+  t.true(
+    objectsEqualIgnoringOrder(pluralKeys, {
+      item: [
+        ['other', 'item'],
+        ['one', 'item'],
+      ],
+      cat: [['one', 'cat']],
+    })
+  )
+  t.true(
+    objectsEqualIgnoringOrder(incompletePluralKeys, {
+      cat: ['other'],
+    })
+  )
+})
+
+test('getPluralKeys with missing arabic', (t) => {
+  const plurals = new Plurals('ar')
+
+  plurals.storePluralKeyIfNeeded('hello', 'hello')
+  plurals.storePluralKeyIfNeeded('item_other', 'item')
+  plurals.storePluralKeyIfNeeded('item_one', 'item')
+  plurals.storePluralKeyIfNeeded('cat_one', 'cat')
+
+  const { pluralKeys, incompletePluralKeys } = plurals.getPluralKeys()
+
+  t.true(
+    objectsEqualIgnoringOrder(pluralKeys, {
+      item: [
+        ['other', 'item'],
+        ['one', 'item'],
+      ],
+      cat: [['one', 'cat']],
+    })
+  )
+  t.true(
+    objectsEqualIgnoringOrder(incompletePluralKeys, {
+      item: ['few', 'many', 'two', 'zero'],
+      cat: ['few', 'many', 'two', 'zero', 'other'],
+    })
+  )
+})
+
+test('getPluralKeys with unnecessary categories english', (t) => {
+  const plurals = new Plurals('en')
+
+  plurals.storePluralKeyIfNeeded('hello', 'hello')
+  plurals.storePluralKeyIfNeeded('item_other', 'item')
+  plurals.storePluralKeyIfNeeded('item_one', 'item')
+  plurals.storePluralKeyIfNeeded('cat_one', 'cat')
+  plurals.storePluralKeyIfNeeded('cat_other', 'cat')
+  plurals.storePluralKeyIfNeeded('cat_few', 'cat')
+
+  const { pluralKeys, unnecessaryPluralKeys } = plurals.getPluralKeys()
+
+  t.true(
+    objectsEqualIgnoringOrder(pluralKeys, {
+      item: [
+        ['other', 'item'],
+        ['one', 'item'],
+      ],
+      cat: [
+        ['one', 'cat'],
+        ['other', 'cat'],
+      ],
+    })
+  )
+
+  t.true(arraysEqualIgnoringOrder(unnecessaryPluralKeys, ['cat_few']))
+})
+
+test('getPluralKeys with ordinal english', (t) => {
+  const plurals = new Plurals('en')
+
+  plurals.storePluralKeyIfNeeded('hello', 'hello')
+  plurals.storePluralKeyIfNeeded('item_other', 'item')
+  plurals.storePluralKeyIfNeeded('item_one', 'item')
+  plurals.storePluralKeyIfNeeded('cat_ordinal_one', 'cat')
+  plurals.storePluralKeyIfNeeded('cat_ordinal_other', 'cat')
+
+  const { pluralKeys, pluralOrdinalKeys } = plurals.getPluralKeys()
+  t.true(
+    objectsEqualIgnoringOrder(pluralKeys, {
+      item: [
+        ['other', 'item'],
+        ['one', 'item'],
+      ],
+    })
+  )
+
+  t.true(
+    objectsEqualIgnoringOrder(pluralOrdinalKeys, {
+      cat: [
+        ['other', 'cat'],
+        ['one', 'cat'],
+      ],
+    })
+  )
+})
+
+test('getPluralKeys with ordinal missing english', (t) => {
+  const plurals = new Plurals('en')
+
+  plurals.storePluralKeyIfNeeded('hello', 'hello')
+  plurals.storePluralKeyIfNeeded('item_other', 'item')
+  plurals.storePluralKeyIfNeeded('item_one', 'item')
+  plurals.storePluralKeyIfNeeded('cat_ordinal_one', 'cat')
+
+  const { pluralKeys, pluralOrdinalKeys, incompletePluralOrdinalKeys } = plurals.getPluralKeys()
+  t.true(
+    objectsEqualIgnoringOrder(pluralKeys, {
+      item: [
+        ['other', 'item'],
+        ['one', 'item'],
+      ],
+    })
+  )
+
+  t.true(
+    objectsEqualIgnoringOrder(pluralOrdinalKeys, {
+      cat: [['one', 'cat']],
+    })
+  )
+
+  t.true(
+    objectsEqualIgnoringOrder(incompletePluralOrdinalKeys, {
+      cat: ['few', 'two', 'other'],
+    })
+  )
+})
+
+test('getPluralKeys with ordinal unnecessary english', (t) => {
+  const plurals = new Plurals('en')
+
+  plurals.storePluralKeyIfNeeded('hello', 'hello')
+  plurals.storePluralKeyIfNeeded('item_other', 'item')
+  plurals.storePluralKeyIfNeeded('item_one', 'item')
+  plurals.storePluralKeyIfNeeded('cat_ordinal_one', 'cat')
+  plurals.storePluralKeyIfNeeded('cat_ordinal_many', 'cat') // This is unnecessary for english// This is unnecessary for english
+
+  const {
+    pluralKeys,
+    pluralOrdinalKeys,
+    incompletePluralOrdinalKeys,
+    unnecessaryPluralOrdinalKeys,
+  } = plurals.getPluralKeys()
+  t.true(
+    objectsEqualIgnoringOrder(pluralKeys, {
+      item: [
+        ['other', 'item'],
+        ['one', 'item'],
+      ],
+    })
+  )
+
+  t.true(
+    objectsEqualIgnoringOrder(pluralOrdinalKeys, {
+      cat: [['one', 'cat']],
+    })
+  )
+
+  t.true(
+    objectsEqualIgnoringOrder(incompletePluralOrdinalKeys, {
+      cat: ['few', 'two', 'other'],
+    })
+  )
+
+  t.true(arraysEqualIgnoringOrder(unnecessaryPluralOrdinalKeys, ['cat_ordinal_many']))
+})
+
+function arraysEqualIgnoringOrder<T>(arr1: T[], arr2: T[]): boolean {
+  if (arr1.length !== arr2.length) return false
+
+  const sortedArr1 = deepSort(arr1)
+  const sortedArr2 = deepSort(arr2)
+
+  for (const [i, element] of sortedArr1.entries()) {
+    if (Array.isArray(element) && Array.isArray(sortedArr2[i])) {
+      // @ts-expect-error
+      if (!arraysEqualIgnoringOrder(element, sortedArr2[i])) return false
+    } else if (element !== sortedArr2[i]) return false
+  }
+
+  return true
+}
+
+function deepSort<T>(arr: T[]): T[] {
+  return arr
+    .map((item) => {
+      if (Array.isArray(item)) {
+        return deepSort(item) as unknown as T
+      }
+
+      return item
+    })
+    .sort(compareElements)
+}
+
+function compareElements(a: any, b: any): number {
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (arraysEqualIgnoringOrder(a, b)) return 0
+    return a > b ? 1 : -1
+  }
+
+  return a > b ? 1 : -1
+}
+
+function objectsEqualIgnoringOrder(obj1: Record<string, any>, obj2: Record<string, any>): boolean {
+  const keys1 = Object.keys(obj1)
+  const keys2 = Object.keys(obj2)
+
+  let equal = true
+
+  if (keys1.length !== keys2.length) {
+    console.log(`- Different number of keys: ${keys1.length} vs ${keys2.length}`)
+    equal = false
+  }
+
+  for (const key of keys1) {
+    if (!keys2.includes(key)) {
+      console.log(`- Key '${key}' is missing in the second object.`)
+      equal = false
+    }
+  }
+
+  for (const key of keys2) {
+    if (!keys1.includes(key)) {
+      console.log(`+ Key '${key}' is missing in the first object.`)
+      equal = false
+    }
+  }
+
+  for (const key of keys1) {
+    if (keys2.includes(key)) {
+      const value1 = obj1[key] // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+      const value2 = obj2[key] // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+
+      if (Array.isArray(value1) && Array.isArray(value2)) {
+        if (!arraysEqualIgnoringOrder(value1, value2)) {
+          console.log(`@@ - Arrays at key '${key}' are different`)
+          console.log(`- ${JSON.stringify(value1)}`)
+          console.log(`+ ${JSON.stringify(value2)}`)
+          equal = false
+        }
+      } else if (value1 !== value2) {
+        console.log(`@@ - Values at key '${key}' are different`)
+        console.log(`- ${value1}`)
+        console.log(`+ ${value2}`)
+        equal = false
+      }
+    }
+  }
+
+  return equal
+}
 
 async function getFilesInDirectory(dir: string): Promise<string[]> {
   const files = await fs.readdir(dir)

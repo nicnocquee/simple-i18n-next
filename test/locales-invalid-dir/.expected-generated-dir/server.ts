@@ -12,9 +12,9 @@ export const interpolateTemplate = (text: string, data: Record<string, string>):
 export type SupportedLanguage = 'en';
   export const defaultLanguage: SupportedLanguage = 'en';
   
-export const enHello = "Hello world!"
-export const enGreeting = "Hello {name}!"
-export const enHome = "Home"
+const enHello = "Hello world!"
+const enGreeting = "Hello {name}!"
+const enHome = "Home"
 export const hello = (lang: SupportedLanguage) => {
       switch (lang) {
     case 'en': return enHello;

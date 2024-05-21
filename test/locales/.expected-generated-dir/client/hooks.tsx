@@ -1,12 +1,36 @@
-
-import { StringKeys, SupportedLanguage, defaultLanguage } from "../server";
+import {
+  StringKeys,
+  SupportedLanguage,
+  defaultLanguage,
+  interpolateTemplate,
+} from "../server";
 import { useState, useMemo, useEffect } from "react";
 
+type Identity<T> = T extends object ? { [K in keyof T]: T[K] } : T;
+type StringKeysWithoutCount<T> = Exclude<
+  T,
+  `${string}WithCount` | `${string}WithOrdinalCount`
+>;
+type StringKeysWithCount<T> = Extract<
+  T,
+  `${string}WithCount` | `${string}WithOrdinalCount`
+>;
+type WithCountFunc = (count: number) => string;
 export const useStrings = <T extends StringKeys>(
   keys: T[],
   lang: SupportedLanguage = defaultLanguage
-): Record<T, string> | null => {
-  const [strings, setStrings] = useState<Record<T, string> | null>(null);
+): [
+  Record<Identity<StringKeysWithoutCount<T>>, string> | null,
+  Record<Identity<StringKeysWithCount<T>>, WithCountFunc> | null
+] => {
+  const [strings, setStrings] = useState<Record<
+    Identity<StringKeysWithoutCount<T>>,
+    string
+  > | null>(null);
+  const [plurals, setPlurals] = useState<Record<
+    Identity<StringKeysWithCount<T>>,
+    WithCountFunc
+  > | null>(null);
 
   const memoizedKeys = useMemo(() => keys, [...keys]);
   const memoizedLang = useMemo(() => lang, [lang]);
@@ -26,21 +50,49 @@ export const useStrings = <T extends StringKeys>(
           })
         );
 
-        if (!signal.aborted) {
-          setStrings(
-            data.reduce(
-              (acc, cur) => (cur ? { ...acc, [cur.key]: cur.data } : acc),
-              {} as Record<T, string>
-            )
+        if (signal.aborted) return;
+
+        const strings = data
+          .filter(
+            (d) =>
+              d &&
+              !d.key.endsWith("WithCount") &&
+              !d.key.endsWith("WithOrdinalCount")
+          )
+          .reduce(
+            (acc, cur) => (cur ? { ...acc, [cur.key]: cur.data } : acc),
+            {} as Record<Identity<StringKeysWithoutCount<T>>, string>
           );
-        }
+
+        const plurals = data
+          .filter(
+            (d) =>
+              d &&
+              (d.key.endsWith("WithCount") ||
+                d.key.endsWith("WithOrdinalCount"))
+          )
+          .reduce(
+            (acc, cur) =>
+              cur
+                ? {
+                    ...acc,
+                    [cur.key]: (count: number): string => {
+                      return interpolateTemplate(cur.data(count), {
+                        count: `${count}`,
+                      });
+                    },
+                  }
+                : acc,
+            {} as Record<Identity<StringKeysWithCount<T>>, WithCountFunc>
+          );
+
+        setStrings(strings);
+        setPlurals(plurals);
       } catch (error) {
         if (!isCleanedup) {
-          if (signal.aborted) {
-            console.log("Fetch aborted");
-          } else {
-            console.error("Error loading locale", error);
-          }
+          signal.aborted
+            ? console.log("Fetch aborted")
+            : console.error("Error loading locale", error);
         }
       }
     }
@@ -53,6 +105,5 @@ export const useStrings = <T extends StringKeys>(
     };
   }, [memoizedLang, memoizedKeys]);
 
-  return strings;
+  return [strings, plurals] as const;
 };
-

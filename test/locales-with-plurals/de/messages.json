@@ -1,0 +1,8 @@
+{
+  "hello": "Hallo Welt!",
+  "greeting": "Hallo {name}!",
+  "home": "Startseite",
+  "apple_one": "Ein Apfel",
+  "apple_other": "{{count}} Äpfel",
+  "cat_ordinal_other": "{{count}}. Katze"
+}
