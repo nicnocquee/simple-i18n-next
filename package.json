@@ -7,6 +7,10 @@
     "simple-i18n-next": "dist/cli.js"
   },
   "url": "https://github.com/nicnocquee/simple-i18n-next",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nicnocquee/simple-i18n-next.git"
+  },
   "type": "module",
   "engines": {
     "node": ">=16"
