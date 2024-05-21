@@ -437,7 +437,7 @@ export default function ClientComponent() {
 
 Note that the plural rules for cardinal and ordinal numbers for a given language can be different. For example, in English, the plural rule for cardinal numbers is `one` and `other`, while the plural rule for ordinal numbers is `one`, `two`, `few`, and `other`. On the other hand, in German, the plural rule for cardinal numbers is `one` and `other`, while the plural rule for ordinal numbers is only `other`.
 
-When you run the script, it will automatically check if the keys for the plurals are valid and complete. For example, if you have a key `book_one` but not `book_other` in the English `messages.json`, the script will throw an error. This way, you can ensure that you don't forget to add a plural rule for a given language. You can find out the plural rules for a given language by executing the following statement in the Node.js REPL or browser console:
+You can find out the plural rules for a given language by executing the following statement in the Node.js REPL or browser console:
 
 ```javascript
 // plural rules for ordinal numbers in German
