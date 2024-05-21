@@ -1,7 +1,7 @@
 {
   "name": "simple-i18n-next",
   "description": "A CLI to generate TypeScript code from translation files in JSON format and Markdown files for Next.js projects.",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "license": "MIT",
   "bin": {
     "simple-i18n-next": "dist/cli.js"
@@ -35,7 +35,7 @@
     "build": "rimraf dist && tsc && npm run copy-files",
     "dev": "tsc --watch",
     "test": "prettier --check . && xo && tsx node_modules/.bin/ava",
-    "copy-files": "copyfiles -f readme.md hooks.template LICENSE dist/",
+    "copy-files": "copyfiles -f readme.md source/hooks.template LICENSE dist/",
     "bump": "npm version patch --force",
     "prepublishOnly": "npm run bump && npm run build"
   },
