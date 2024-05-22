@@ -2,7 +2,7 @@
 
 This is a CLI to generate TypeScript code from translation files in JSON format and Markdown files for [Next.js](https://nextjs.org/) projects.
 
-Note that this CLI is still WIP. It means every update might break your project.
+_Note that this CLI is still WIP. It means every update might break your project._
 
 ## Why?
 
@@ -450,13 +450,151 @@ new Intl.PluralRules('de').resolvedOptions().pluralCategories
 
 You can checkout the sample Next.js project that uses this CLI [in this repository](https://github.com/nicnocquee/simple-i18n-next-example).
 
+## API
+
+### Generated constants and functions
+
+The generated constants and functions are using camelCase convention. For example, if you have the followng `locales/en/messages.json` file:
+
+```json
+{
+  "hello": "Hello world!",
+  "greeting": "Hello {name}!",
+  "home": "Home",
+  "world-cup": "World cup"
+}
+```
+
+the CLI will generate the following:
+
+```typescript
+export type StringKeys = 'hello' | 'greeting' | 'home' | 'worldCup'
+
+export const worldCup = (lang: SupportedLanguage) => {
+  // content
+}
+
+export const hello = (lang: SupportedLanguage) => {
+  // content
+}
+
+export const greeting = (lang: SupportedLanguage) => {
+  // content
+}
+
+export const home = (lang: SupportedLanguage) => {
+  // content
+}
+```
+
+For the plural keys, the CLI will generate functions with the format: `<key>WithCount` for cardinal numbers and `<key>WithOrdinalCount` for ordinal numbers. For example, if you have the following `locales/en/messages.json` file:
+
+```json
+{
+  "apple_one": "An apple",
+  "apple_other": "{{count}} apples",
+  "cat_ordinal_one": "1st cat",
+  "cat_ordinal_two": "2nd cat",
+  "cat_ordinal_few": "3rd cat",
+  "cat_ordinal_other": "{{count}}th cat"
+}
+```
+
+Then the CLI will generate the following:
+
+```typescript
+export const appleWithCount = (count: number) => {
+  // content
+}
+
+export const catWithOrdinalCount = (count: number) => {
+  // content
+}
+```
+
+### useStrings
+
+`useStrings` is a custom React hook so you can only use it in a client component.
+
+Parameters:
+
+- `keys`: An array of string keys to be used in the component. The keys can only be those defined in `StringKeys`. If you pass unknown keys, TypeScript will throw an error.
+- `lang`: The language code to use for the translations. The value should be one of the supported language codes.
+
+Returns:
+
+- `strings`: An array of translated strings, excluding the plural keys.
+- `plurals`: An array of functions that can be used to translate the plural keys.
+
+Example:
+
+You have `locales/en/messages.json` and `locales/de/messages.json` files that contain the translations for the language like this:
+
+```json
+{
+  "hello": "Hello",
+  "greeting": "Hello {name}!",
+  "apple_one": "An apple",
+  "apple_other": "{{count}} apples",
+  "cat_ordinal_one": "1st cat",
+  "cat_ordinal_two": "2nd cat",
+  "cat_ordinal_few": "3rd cat",
+  "cat_ordinal_other": "{{count}}th cat"
+}
+```
+
+```json
+{
+  "hello": "Hallo",
+  "greeting": "Hallo {name}!",
+  "apple_one": "Ein Apfel",
+  "apple_other": "{{count}} Äpfel",
+  "cat_ordinal_other": "1. Katze"
+}
+```
+
+Then in the client component, you can use the `useStrings` hook like this:
+
+````tsx
+import { useStrings } from '@/locales/.generated/client/hooks'
+
+export default function ClientComponent() {
+  const lang = useSelectedLanguageFromPathname()
+  const [strings, plurals] = useStrings(
+    [
+      'hello',
+      'greeting',
+      'appleWithCount',
+      'catWithOrdinalCount',
+    ],
+    lang
+  )
+  if (!strings) return null
+  if (!plurals) return null
+  return (
+    <div>
+      <h1>{strings.hello}</h1>
+      <p>{strings.greeting('John')}</p>
+      <p>{plurals.appleWithCount(1)}</p>
+      <p>{plurals.appleWithCount(2)}</p>
+      <p>{plurals.appleWithCount(3)}</p>
+      <p>{plurals.appleWithCount(4)}</p>
+      <p>{plurals.appleWithCount(5)}</p>
+      <p>{plurals.catWithOrdinalCount(1)}</p>
+      <p>{plurals.catWithOrdinalCount(2)}</p>
+      <p>{plurals.catWithOrdinalCount(3)}</p>
+      <p>{plurals.catWithOrdinalCount(4)}</p>
+      <p>{plurals.catWithOrdinalCount(5)}</p>
+    </div>
+  )
+
 ## Development
 
 Run
 
 ```bash
 npx tsx source/cli.tsx -i "./locales"
-```
+````
 
 ## License
 
