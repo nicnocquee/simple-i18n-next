@@ -574,7 +574,7 @@ export default function ClientComponent() {
   return (
     <div>
       <h1>{strings.hello}</h1>
-      <p>{strings.greeting('John')}</p>
+      <p>{strings.greeting({name: 'John'})}</p>
       <p>{plurals.appleWithCount(1)}</p>
       <p>{plurals.appleWithCount(2)}</p>
       <p>{plurals.appleWithCount(3)}</p>
