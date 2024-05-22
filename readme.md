@@ -555,7 +555,7 @@ You have `locales/en/messages.json` and `locales/de/messages.json` files that co
 
 Then in the client component, you can use the `useStrings` hook like this:
 
-````tsx
+```tsx
 import { useStrings } from '@/locales/.generated/client/hooks'
 
 export default function ClientComponent() {
@@ -587,6 +587,7 @@ export default function ClientComponent() {
       <p>{plurals.catWithOrdinalCount(5)}</p>
     </div>
   )
+```
 
 ## Development
 
@@ -594,7 +595,7 @@ Run
 
 ```bash
 npx tsx source/cli.tsx -i "./locales"
-````
+```
 
 ## License
 
