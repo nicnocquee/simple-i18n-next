@@ -260,6 +260,41 @@ export function generateLocale({
     throw new Error(errors.join('\n') || 'Something wrong')
   }
 
+  for (const lang of langs) {
+    const {
+      incompletePluralKeys,
+      incompletePluralOrdinalKeys,
+      unnecessaryPluralKeys,
+      unnecessaryPluralOrdinalKeys,
+    } = pluralLangKeys[lang as any]!
+
+    Object.keys(incompletePluralKeys).forEach((key) => {
+      const missingKeys = incompletePluralKeys[key]!
+      console.warn(
+        `WARNING: Missing plural rule keys for cardinal number in language "${lang}": ${missingKeys.map((m) => `${key}_${m}`).join(', ')}`
+      )
+    })
+
+    Object.keys(incompletePluralOrdinalKeys).forEach((key) => {
+      const missingKeys = incompletePluralOrdinalKeys[key]!
+      console.warn(
+        `WARNING: Missing plural rule keys for ordinal number in language "${lang}": ${missingKeys.map((m) => `${key}_${m}`).join(', ')}`
+      )
+    })
+
+    if (unnecessaryPluralKeys.length > 0) {
+      console.warn(
+        `WARNING: Unnecessary plural rule keys for cardinal number in language "${lang}": ${unnecessaryPluralKeys.join(', ')}`
+      )
+    }
+
+    if (unnecessaryPluralOrdinalKeys.length > 0) {
+      console.warn(
+        `WARNING: Unnecessary plural rule keys for ordinal number in language "${lang}": ${unnecessaryPluralOrdinalKeys.join(', ')}`
+      )
+    }
+  }
+
   // Generate locale functions
   Object.keys(langFunctions).forEach((key) => {
     const propType = propTypes[key]
