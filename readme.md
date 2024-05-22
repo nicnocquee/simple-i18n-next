@@ -521,7 +521,7 @@ Parameters:
 - `keys`: An array of string keys to be used in the component. The keys can only be those defined in `StringKeys`. If you pass unknown keys, TypeScript will throw an error.
 - `lang`: The language code to use for the translations. The value should be one of the supported language codes.
 
-Returns:
+Returns a tuple:
 
 - `strings`: An array of translated strings, excluding the plural keys.
 - `plurals`: An array of functions that can be used to translate the plural keys.
