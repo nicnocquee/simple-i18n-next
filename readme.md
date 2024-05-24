@@ -128,13 +128,15 @@ locales/.generated
 ```json
 {
   "scripts": {
-    "generate-locales": "simple-i18n-next -i ./locales",
+    "generate-locales": "simple-i18n-next -i ./locales -l en",
     "dev": "npm run generate-locales && next dev",
     "build": "npm run generate-locales && next build",
     "start": "next start"
   }
 }
 ```
+
+Note that if you don't specify the default language with the `-l` flag, the first directory in the `locales` directory will be used as the default language.
 
 ## How to use the generated code
 
