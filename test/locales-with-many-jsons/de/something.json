@@ -1,5 +1,5 @@
 {
-  "hello": "Hallo Welt!",
-  "greeting": "Hallo {name}!",
-  "home": "Startseite"
+  "hello": "Hallo Welt in etwas!",
+  "greeting": "Hallo, etwas {name}!",
+  "home": "Startseite etwas"
 }

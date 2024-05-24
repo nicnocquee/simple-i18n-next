@@ -15,15 +15,15 @@ export type SupportedLanguage = 'de' | 'en';
 const deHello = "Hallo Welt!"
 const deGreeting = "Hallo {name}!"
 const deHome = "Startseite"
-const deSomethingHello = "Hallo Welt!"
-const deSomethingGreeting = "Hallo {name}!"
-const deSomethingHome = "Startseite"
+const deSomethingHello = "Hallo Welt in etwas!"
+const deSomethingGreeting = "Hallo, etwas {name}!"
+const deSomethingHome = "Startseite etwas"
 const enHello = "Hello world!"
 const enGreeting = "Hello {name}!"
 const enHome = "Home"
-const enSomethingHello = "Hello world!"
-const enSomethingGreeting = "Hello {name}!"
-const enSomethingHome = "Home"
+const enSomethingHello = "Hello world in something!"
+const enSomethingGreeting = "Hello, something {name}!"
+const enSomethingHome = "Home something"
 export const hello = (lang: SupportedLanguage) => {
       switch (lang) {
     case 'de': return deHello;

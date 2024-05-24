@@ -1,5 +1,5 @@
 {
-  "hello": "Hello world!",
-  "greeting": "Hello {name}!",
-  "home": "Home"
+  "hello": "Hello world in something!",
+  "greeting": "Hello, something {name}!",
+  "home": "Home something"
 }
