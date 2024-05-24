@@ -15,8 +15,9 @@ The existing solutions for internationalization (i18n) in Next.js are too compli
 - In RSC, the translations are generated inline, so no JS code is sent to the client.
 - In client components, if you use the generated `useStrings` hook, only the translation strings that you need will be sent to the client. There will be no unused translations sent to the client.
 - You can use markdown files and use them as React components.
-- Support for plurals!
+- Pluralization support.
 - Nested keys are supported.
+- Multiple JSON files are supported.
 
 ## Install
 
@@ -76,6 +77,20 @@ and a `locales/de/messages.json` file that contains the following content:
 }
 ```
 
+You can also add multiple JSON files in the same directory. For example, you can have also `locales/en/client.json` file that contains the following content:
+
+```json
+{
+  "hello": "Hello",
+  "welcome": "Welcome to {{name}}",
+  "about": "About",
+  "contact": "Contact",
+  "coming_soon": "Coming soon"
+}
+```
+
+Note that you can have the same keys in different JSON files.
+
 4. Inside each language directory, you can also add several markdown files. For example, you can create a `locales/en/about.mdx` file that contains the following content:
 
 ```mdx
@@ -122,6 +137,40 @@ locales/.generated
 ```
 
 ## How to use the generated code
+
+### Camel case convention
+
+Every key in the JSON files is converted to camel case convention. When the keys are from the default `messages.json` file, they are not prefixed with the file name. For example, if you have the following `locales/en/messages.json` file:
+
+```json
+{
+  "hello": "Hello"
+}
+```
+
+it will be converted to the following TypeScript code:
+
+```typescript
+export const hello = (lang: SupportedLanguage) => {
+  // content
+}
+```
+
+When the keys are from other JSON files, the file name is prefixed to the key. For example, if you have the following `locales/en/client.json` file:
+
+```json
+{
+  "hello": "Hello"
+}
+```
+
+it will be converted to the following TypeScript code:
+
+```typescript
+export const clientHello = (lang: SupportedLanguage) => {
+  // content
+}
+```
 
 ### In React Server Components (RSC)
 
