@@ -738,7 +738,7 @@ function flattenObjectToCamelCase(obj: any, prefix = '', fileName = ''): Record<
           : camelCaseKey
 
       if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
-        Object.assign(flattened, flattenObjectToCamelCase(obj[key], prefixedKey))
+        Object.assign(flattened, flattenObjectToCamelCase(obj[key], prefixedKey, fileName))
       } else {
         const keyToUse =
           fileName.trim().length > 0

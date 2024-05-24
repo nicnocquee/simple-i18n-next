@@ -12,18 +12,68 @@ export const interpolateTemplate = (text: string, data: Record<string, string>):
 export type SupportedLanguage = 'de' | 'en';
   export const defaultLanguage: SupportedLanguage = 'en';
   
+const deAnotherFileHello = "Hallo Welt in anderes Datei!"
+const deAnotherFileGreeting = "Hallo, anderes Datei {name}!"
+const deAnotherFileHome = "Startseite anderes Datei"
+const deAnotherFileClientHello = "Hallo Welt in einer anderen Client-Datei!"
+const deAnotherFileClientAnotherBye = "auf Wiedersehen, {name}"
 const deHello = "Hallo Welt!"
 const deGreeting = "Hallo {name}!"
 const deHome = "Startseite"
 const deSomethingHello = "Hallo Welt in etwas!"
 const deSomethingGreeting = "Hallo, etwas {name}!"
 const deSomethingHome = "Startseite etwas"
+const enAnotherFileHello = "Hello world in another file!"
+const enAnotherFileGreeting = "Hello, another file {name}!"
+const enAnotherFileHome = "Home another file"
+const enAnotherFileClientHello = "Hello world in another client file!"
+const enAnotherFileClientAnotherBye = "bye, {name}"
 const enHello = "Hello world!"
 const enGreeting = "Hello {name}!"
 const enHome = "Home"
 const enSomethingHello = "Hello world in something!"
 const enSomethingGreeting = "Hello, something {name}!"
 const enSomethingHome = "Home something"
+export const anotherFileHello = (lang: SupportedLanguage) => {
+      switch (lang) {
+    case 'de': return deAnotherFileHello;
+case 'en': return enAnotherFileHello;
+        default:
+            return enAnotherFileHello
+        }
+    }
+export const anotherFileGreeting = (lang: SupportedLanguage) => {
+      switch (lang) {
+    case 'de': return deAnotherFileGreeting;
+case 'en': return enAnotherFileGreeting;
+        default:
+            return enAnotherFileGreeting
+        }
+    }
+export const anotherFileHome = (lang: SupportedLanguage) => {
+      switch (lang) {
+    case 'de': return deAnotherFileHome;
+case 'en': return enAnotherFileHome;
+        default:
+            return enAnotherFileHome
+        }
+    }
+export const anotherFileClientHello = (lang: SupportedLanguage) => {
+      switch (lang) {
+    case 'de': return deAnotherFileClientHello;
+case 'en': return enAnotherFileClientHello;
+        default:
+            return enAnotherFileClientHello
+        }
+    }
+export const anotherFileClientAnotherBye = (lang: SupportedLanguage) => {
+      switch (lang) {
+    case 'de': return deAnotherFileClientAnotherBye;
+case 'en': return enAnotherFileClientAnotherBye;
+        default:
+            return enAnotherFileClientAnotherBye
+        }
+    }
 export const hello = (lang: SupportedLanguage) => {
       switch (lang) {
     case 'de': return deHello;
@@ -72,4 +122,4 @@ case 'en': return enSomethingHome;
             return enSomethingHome
         }
     }
-export type StringKeys = 'hello' | 'greeting' | 'home' | 'somethingHello' | 'somethingGreeting' | 'somethingHome'
+export type StringKeys = 'anotherFileHello' | 'anotherFileGreeting' | 'anotherFileHome' | 'anotherFileClientHello' | 'anotherFileClientAnotherBye' | 'hello' | 'greeting' | 'home' | 'somethingHello' | 'somethingGreeting' | 'somethingHome'

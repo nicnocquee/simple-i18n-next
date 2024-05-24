@@ -1,0 +1,1 @@
+export default "Hallo Welt in einer anderen Client-Datei!"

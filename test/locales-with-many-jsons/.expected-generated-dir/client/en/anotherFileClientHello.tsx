@@ -1,0 +1,1 @@
+export default "Hello world in another client file!"

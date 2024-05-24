@@ -1,0 +1,1 @@
+export default "Hallo Welt in anderes Datei!"

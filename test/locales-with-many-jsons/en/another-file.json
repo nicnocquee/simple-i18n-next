@@ -1,0 +1,11 @@
+{
+  "hello": "Hello world in another file!",
+  "greeting": "Hello, another file {name}!",
+  "home": "Home another file",
+  "client": {
+    "hello": "Hello world in another client file!",
+    "another": {
+      "bye": "bye, {name}"
+    }
+  }
+}
