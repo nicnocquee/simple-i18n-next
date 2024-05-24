@@ -77,7 +77,7 @@ and a `locales/de/messages.json` file that contains the following content:
 }
 ```
 
-You can also add multiple JSON files in the same directory. For example, you can have also `locales/en/client.json` file that contains the following content:
+You can also add multiple JSON files in the same directory. For example, you can also have a `locales/en/client.json` file that contains the following content:
 
 ```json
 {
@@ -88,6 +88,8 @@ You can also add multiple JSON files in the same directory. For example, you can
   "coming_soon": "Coming soon"
 }
 ```
+
+If you do, you need to add the corresponding files in the other language directories.
 
 Note that you can have the same keys in different JSON files.
 
