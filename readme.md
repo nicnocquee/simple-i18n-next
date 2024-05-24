@@ -16,6 +16,7 @@ The existing solutions for internationalization (i18n) in Next.js are too compli
 - In client components, if you use the generated `useStrings` hook, only the translation strings that you need will be sent to the client. There will be no unused translations sent to the client.
 - You can use markdown files and use them as React components.
 - Support for plurals!
+- Nested keys are supported.
 
 ## Install
 
@@ -444,6 +445,49 @@ You can find out the plural rules for a given language by executing the followin
 new Intl.PluralRules('de', { type: 'ordinal' }).resolvedOptions().pluralCategories
 // plural rules for cardinal numbers in German
 new Intl.PluralRules('de').resolvedOptions().pluralCategories
+```
+
+### Nested keys
+
+You can use nested keys in your `messages.json` file. The keys are converted to camelCase convention. For example, if you have the following `locales/en/messages.json` file:
+
+```json
+{
+  "page": {
+    "title": "Page title",
+    "section": {
+      "title": "Section title"
+    }
+  }
+}
+```
+
+and a `locales/de/messages.json` file that contains the following content:
+
+```json
+{
+  "page": {
+    "title": "Seitentitel",
+    "section": {
+      "title": "Sektionentitel"
+    }
+  }
+}
+```
+
+Then in your React component, you can use the nested key like this:
+
+```tsx
+import { pageTitle, pageSectionTitle } from 'locales/.generated/server'
+
+export default function HomePage({ params: { lang } }: { params: { lang: SupportedLanguage } }) {
+  return (
+    <div>
+      <h1>{pageTitle(lang)}</h1>
+      <h2>{pageSectionTitle(lang)}</h2>
+    </div>
+  )
+}
 ```
 
 ## Example
