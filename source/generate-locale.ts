@@ -686,10 +686,12 @@ function flattenObjectToCamelCase(obj: any, prefix = ''): Record<string, string>
         key.endsWith('_ordinal_two') ||
         key.endsWith('_ordinal_few') ||
         key.endsWith('_ordinal_other') ||
+        key.endsWith('_ordinal_zero') ||
         key.endsWith('_one') ||
         key.endsWith('_two') ||
         key.endsWith('_few') ||
-        key.endsWith('_other')
+        key.endsWith('_other') ||
+        key.endsWith('_zero')
       ) {
         flattened[key] = obj[key]
         continue
