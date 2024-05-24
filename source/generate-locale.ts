@@ -278,7 +278,7 @@ export function generateLocale({
     Object.keys(incompletePluralOrdinalKeys).forEach((key) => {
       const missingKeys = incompletePluralOrdinalKeys[key]!
       console.warn(
-        `WARNING: Missing plural rule keys for ordinal number in language "${lang}": ${missingKeys.map((m) => `${key}_${m}`).join(', ')}`
+        `WARNING: Missing plural rule keys for ordinal number in language "${lang}": ${missingKeys.map((m) => `${key}_ordinal_${m}`).join(', ')}`
       )
     })
 

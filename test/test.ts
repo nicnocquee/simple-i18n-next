@@ -14,6 +14,8 @@ test.before(async () => {
       fs.rm('./test/locales-invalid-dir/.generated', { recursive: true }),
       fs.rm('./test/locales-invalid-dir/.generated2', { recursive: true }),
       fs.rm('./test/locales-invalid-dir/.generated3', { recursive: true }),
+      fs.rm('./test/locales-with-plurals/.generated3', { recursive: true }),
+      fs.rm('./test/locales-with-nested-keys/.generated3', { recursive: true }),
     ])
   } catch (error) {
     console.log(error)
@@ -28,6 +30,9 @@ test.after(async () => {
       fs.rm('./test/locales-invalid-dir/.generated', { recursive: true }),
       fs.rm('./test/locales-invalid-dir/.generated2', { recursive: true }),
       fs.rm('./test/locales-invalid-dir/.generated3', { recursive: true }),
+      fs.rm('./test/locales-invalid-dir/.generated3', { recursive: true }),
+      fs.rm('./test/locales-with-plurals/.generated3', { recursive: true }),
+      fs.rm('./test/locales-with-nested-keys/.generated3', { recursive: true }),
     ])
   } catch (error) {
     console.log(error)
