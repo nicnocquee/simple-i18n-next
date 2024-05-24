@@ -1,0 +1,11 @@
+{
+  "hello": "Hallo Welt!",
+  "greeting": "Hallo {name}!",
+  "home": "Startseite",
+  "page": {
+    "title": "Seitentitel",
+    "section": {
+      "title": "Sektionentitel"
+    }
+  }
+}

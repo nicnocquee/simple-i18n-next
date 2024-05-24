@@ -28,7 +28,7 @@ function arrayToCamelCase(arr: string[]): string {
   const expand = arr.flatMap((item) => {
     const makeItSafe = item.replace(/[^a-zA-Z\d]+/g, ' ')
     const split = makeItSafe.split(' ')
-    const capitalized = split.map((word) => capitalize(word.toLowerCase()))
+    const capitalized = split.map((word) => capitalize(word))
     return capitalized
   })
   const camelCase = expand.join('')
@@ -163,7 +163,7 @@ export function generateLocale({
     path.join(localesDir, baseLang, 'messages.json'),
     'utf8'
   )
-  const baseMessagesJson = JSON.parse(baseMessagesString)
+  const baseMessagesJson = flattenObjectToCamelCase(JSON.parse(baseMessagesString))
 
   // Define the output directories and files
   const outputDir = outputDirPath
@@ -212,7 +212,7 @@ export function generateLocale({
   langs.forEach((lang) => {
     const pluralLang = new Plurals(lang)
     const messagesString = fs.readFileSync(path.join(localesDir, lang, messagesFilename), 'utf8')
-    const messagesJson = JSON.parse(messagesString)
+    const messagesJson = flattenObjectToCamelCase(JSON.parse(messagesString))
 
     baseKeys.forEach((key) => {
       const functionName = arrayToCamelCase([lang, ...key.split(' ')])
@@ -230,6 +230,7 @@ export function generateLocale({
       const value = messagesJson[key]
       if (!value) {
         errors.push(`Missing value for "${key}" in ${lang}`)
+        return
       }
 
       const content = `const ${functionName} = ${JSON.stringify(value)}`
@@ -670,4 +671,30 @@ export class Plurals {
       unnecessaryPluralOrdinalKeys: this.unnecessaryPluralOrdinalKeys,
     }
   }
+}
+
+function flattenObjectToCamelCase(obj: any, prefix = ''): Record<string, string> {
+  const flattened: Record<string, string> = {}
+
+  const toCamelCase = (str: string): string => {
+    return str.replace(/[^a-zA-Z\d]+(.)/g, (_, chr: string) => chr.toUpperCase())
+  }
+
+  for (const key in obj) {
+    if (Object.hasOwn(obj, key)) {
+      const camelCaseKey = toCamelCase(key)
+      const prefixedKey =
+        prefix.length > 0
+          ? `${prefix}${camelCaseKey.charAt(0).toUpperCase() + camelCaseKey.slice(1)}`
+          : camelCaseKey
+
+      if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+        Object.assign(flattened, flattenObjectToCamelCase(obj[key], prefixedKey))
+      } else {
+        flattened[prefixedKey] = obj[key]
+      }
+    }
+  }
+
+  return flattened
 }

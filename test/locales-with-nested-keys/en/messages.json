@@ -1,0 +1,11 @@
+{
+  "hello": "Hello world!",
+  "greeting": "Hello {name}!",
+  "home": "Home",
+  "page": {
+    "title": "Page title",
+    "section": {
+      "title": "Section title"
+    }
+  }
+}

@@ -87,6 +87,20 @@ test('generateLocale with invalid language code directory', async (t) => {
   t.true(identical)
 })
 
+test('generateLocale with nested keys', async (t) => {
+  generateLocale({
+    localesDir: path.resolve(process.cwd(), './test/locales-with-nested-keys'),
+    defaultLanguage: 'en',
+    outputDir: './test/locales-with-nested-keys/.generated3',
+    silent: true,
+  })
+  const identical = await compareDirectories(
+    './test/locales-with-nested-keys/.generated3',
+    './test/locales-with-nested-keys/.expected-generated-dir'
+  )
+  t.true(identical)
+})
+
 test('getPluralKeys no missing', (t) => {
   const plurals = new Plurals('en')
 
