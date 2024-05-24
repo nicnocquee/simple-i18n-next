@@ -230,7 +230,6 @@ export function generateLocale({
       const value = messagesJson[key]
       if (!value) {
         errors.push(`Missing value for "${key}" in ${lang}`)
-        return
       }
 
       const content = `const ${functionName} = ${JSON.stringify(value)}`
@@ -244,7 +243,7 @@ export function generateLocale({
         clientContent
       )
 
-      const propType = generatePropTypes(value, genericFunctionName)
+      const propType = value ? generatePropTypes(value, genericFunctionName) : null
       if (propType && !propTypes[genericFunctionName]) {
         propTypes[genericFunctionName] = propType
       }
@@ -682,6 +681,20 @@ function flattenObjectToCamelCase(obj: any, prefix = ''): Record<string, string>
 
   for (const key in obj) {
     if (Object.hasOwn(obj, key)) {
+      if (
+        key.endsWith('_ordinal_one') ||
+        key.endsWith('_ordinal_two') ||
+        key.endsWith('_ordinal_few') ||
+        key.endsWith('_ordinal_other') ||
+        key.endsWith('_one') ||
+        key.endsWith('_two') ||
+        key.endsWith('_few') ||
+        key.endsWith('_other')
+      ) {
+        flattened[key] = obj[key]
+        continue
+      }
+
       const camelCaseKey = toCamelCase(key)
       const prefixedKey =
         prefix.length > 0
