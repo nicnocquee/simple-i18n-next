@@ -16,6 +16,7 @@ test.before(async () => {
       fs.rm('./test/locales-invalid-dir/.generated3', { recursive: true }),
       fs.rm('./test/locales-with-plurals/.generated3', { recursive: true }),
       fs.rm('./test/locales-with-nested-keys/.generated3', { recursive: true }),
+      fs.rm('./test/locales-with-many-jsons/.generated', { recursive: true }),
     ])
   } catch (error) {
     console.log(error)
@@ -33,6 +34,7 @@ test.after(async () => {
       fs.rm('./test/locales-invalid-dir/.generated3', { recursive: true }),
       fs.rm('./test/locales-with-plurals/.generated3', { recursive: true }),
       fs.rm('./test/locales-with-nested-keys/.generated3', { recursive: true }),
+      fs.rm('./test/locales-with-many-jsons/.generated', { recursive: true }),
     ])
   } catch (error) {
     console.log(error)
@@ -116,6 +118,20 @@ test('generateLocale with plurals', async (t) => {
   const identical = await compareDirectories(
     './test/locales-with-plurals/.generated3',
     './test/locales-with-plurals/.expected-generated-dir'
+  )
+  t.true(identical)
+})
+
+test('generateLocale from multiple json files', async (t) => {
+  generateLocale({
+    localesDir: path.resolve(process.cwd(), './test/locales-with-many-jsons'),
+    defaultLanguage: 'en',
+    outputDir: './test/locales-with-many-jsons/.generated',
+    silent: true,
+  })
+  const identical = await compareDirectories(
+    './test/locales-with-many-jsons/.generated',
+    './test/locales-with-many-jsons/.expected-generated-dir'
   )
   t.true(identical)
 })

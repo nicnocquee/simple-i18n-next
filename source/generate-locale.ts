@@ -158,12 +158,29 @@ export function generateLocale({
 
   const baseLang = defaultLanguage ?? (langs[0] as (typeof langs)[number])
 
+  const getJsonFileNames = (dir: string): string[] => {
+    try {
+      const files = fs.readdirSync(dir)
+      return files.filter((file) => path.extname(file) === '.json')
+    } catch (error) {
+      console.error('Error reading directory:', error)
+      return []
+    }
+  }
+
   // Read and parse the base language messages
-  const baseMessagesString = fs.readFileSync(
-    path.join(localesDir, baseLang, 'messages.json'),
-    'utf8'
-  )
-  const baseMessagesJson = flattenObjectToCamelCase(JSON.parse(baseMessagesString))
+  let baseMessagesJson = {}
+  const jsonFiles = getJsonFileNames(path.join(localesDir, baseLang))
+
+  for (const file of jsonFiles) {
+    const filePath = path.join(localesDir, baseLang, file)
+    const content = fs.readFileSync(filePath, 'utf8')
+    const fileName = file.replace('.json', '')
+    baseMessagesJson = {
+      ...baseMessagesJson,
+      ...flattenObjectToCamelCase(JSON.parse(content), '', fileName === 'messages' ? '' : fileName),
+    }
+  }
 
   // Define the output directories and files
   const outputDir = outputDirPath
@@ -173,7 +190,6 @@ export function generateLocale({
   const clientOutputDir = path.join(outputDir, 'client')
   const outputFile = path.join(outputDir, 'server.ts')
   const markdownOutputFile = path.join(outputDir, 'locales-markdown.tsx')
-  const messagesFilename = 'messages.json'
 
   // Create output directories if they don't exist
   fs.mkdirSync(outputDir, { recursive: true })
@@ -211,8 +227,22 @@ export function generateLocale({
   // Process each language and generate individual functions for each key
   langs.forEach((lang) => {
     const pluralLang = new Plurals(lang)
-    const messagesString = fs.readFileSync(path.join(localesDir, lang, messagesFilename), 'utf8')
-    const messagesJson = flattenObjectToCamelCase(JSON.parse(messagesString))
+
+    const jsonFiles = getJsonFileNames(path.join(localesDir, lang))
+    let messagesJson: Record<string, string> = {}
+    for (const file of jsonFiles) {
+      const filePath = path.join(localesDir, lang, file)
+      const content = fs.readFileSync(filePath, 'utf8')
+      const fileName = file.replace('.json', '')
+      messagesJson = {
+        ...messagesJson,
+        ...flattenObjectToCamelCase(
+          JSON.parse(content),
+          '',
+          fileName === 'messages' ? '' : fileName
+        ),
+      }
+    }
 
     baseKeys.forEach((key) => {
       const functionName = arrayToCamelCase([lang, ...key.split(' ')])
@@ -672,7 +702,7 @@ export class Plurals {
   }
 }
 
-function flattenObjectToCamelCase(obj: any, prefix = ''): Record<string, string> {
+function flattenObjectToCamelCase(obj: any, prefix = '', fileName = ''): Record<string, string> {
   const flattened: Record<string, string> = {}
 
   const toCamelCase = (str: string): string => {
@@ -693,7 +723,11 @@ function flattenObjectToCamelCase(obj: any, prefix = ''): Record<string, string>
         key.endsWith('_other') ||
         key.endsWith('_zero')
       ) {
-        flattened[key] = obj[key]
+        const keyToUse =
+          fileName.trim().length > 0
+            ? `${fileName}${key.charAt(0).toUpperCase() + key.slice(1)}`
+            : key
+        flattened[keyToUse] = obj[key]
         continue
       }
 
@@ -706,7 +740,11 @@ function flattenObjectToCamelCase(obj: any, prefix = ''): Record<string, string>
       if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
         Object.assign(flattened, flattenObjectToCamelCase(obj[key], prefixedKey))
       } else {
-        flattened[prefixedKey] = obj[key]
+        const keyToUse =
+          fileName.trim().length > 0
+            ? `${fileName}${prefixedKey.charAt(0).toUpperCase() + prefixedKey.slice(1)}`
+            : prefixedKey
+        flattened[keyToUse] = obj[key]
       }
     }
   }
