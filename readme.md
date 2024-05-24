@@ -10,11 +10,11 @@ The existing solutions for internationalization (i18n) in Next.js are too compli
 
 ## Features
 
-- The translations are type-safe. That means there will be build-time errors if you use a translation key that does not exist in a specific language.
-- The translation keys are available for all languages. That means you will get an error message if you forget to add a translation for a specific language.
+- Type safe translation. That means there will be build-time errors if you use a translation key that does not exist in a specific language.
+- Translation keys cover all languages. As a result, an error message will appear if a translation for a specific language is not added.
 - In RSC, the translations are generated inline, so no JS code is sent to the client.
-- In client components, if you use the generated `useStrings` hook, only the translation strings that you need will be sent to the client. There will be no unused translations sent to the client.
-- You can use markdown files and use them as React components.
+- Only necessary translations are sent. When using the generated `useStrings` hook in client components, only the required translation strings are sent, avoiding any unused translations.
+- You can use markdown files for each language.
 - Pluralization support.
 - Nested keys are supported.
 - Multiple JSON files are supported.
