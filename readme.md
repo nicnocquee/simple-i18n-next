@@ -47,6 +47,10 @@ npx simple-i18n-next -i ./locales
     $ simple-i18n-next -i ./locales
 ```
 
+## Video Demo
+
+[![Watch the video](https://img.youtube.com/vi/AlDYslqj3Do/default.jpg)](https://www.youtube.com/watch?v=AlDYslqj3Do)
+
 ## How to use
 
 To get started:
