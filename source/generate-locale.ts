@@ -725,7 +725,7 @@ function flattenObjectToCamelCase(obj: any, prefix = '', fileName = ''): Record<
       ) {
         const keyToUse =
           fileName.trim().length > 0
-            ? `${fileName}${key.charAt(0).toUpperCase() + key.slice(1)}`
+            ? `${toCamelCase(fileName)}${key.charAt(0).toUpperCase() + key.slice(1)}`
             : key
         flattened[keyToUse] = obj[key]
         continue
