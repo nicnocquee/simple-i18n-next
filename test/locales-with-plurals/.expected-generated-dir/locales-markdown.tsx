@@ -10,7 +10,8 @@ export const interpolateTemplate = (text: string, data: Record<string, string>):
     return theText
   }
 export type SupportedLanguage = 'de' | 'en';
-  export const defaultLanguage: SupportedLanguage = 'en';
+export const defaultLanguage: SupportedLanguage = 'en';
+export const supportedLanguages: SupportedLanguage[] = ['de', 'en'];
   
 import { ComponentProps } from 'react';
 import DeIndexMarkdown from '../de/index.mdx';

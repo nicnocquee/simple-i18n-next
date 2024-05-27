@@ -693,13 +693,55 @@ export default function ClientComponent() {
   )
 ```
 
+### supportedLanguages
+
+You can use the `supportedLanguages` array to get the supported languages in your application. For example
+
+```tsx
+import { supportedLanguages } from '@/locales/.generated/server'
+import { useRouter } from 'next/router'
+
+export default function LanguageSelector() {
+  const router = useRouter()
+  return (
+    <div>
+      {supportedLanguages.map((lang) => (
+        <button key={lang} onClick={() => router.push(`/${lang}`)}>
+          {lang}
+        </button>
+      ))}
+    </div>
+  )
+}
+```
+
+### defaultLanguage
+
+You can use the `defaultLanguage` string to get the default language in your application. For example
+
+````tsx
+import { defaultLanguage } from '@/locales/.generated/server'
+import { useRouter } from 'next/router'
+
+export default function LanguageSelector() {
+  const router = useRouter()
+  return (
+    <div>
+      <button onClick={() => router.push(`/${defaultLanguage}`)}>
+        {defaultLanguage}
+      </button>
+    </div>
+  )
+}
+```
+
 ## Development
 
 Run
 
 ```bash
 npx tsx source/cli.tsx -i "./locales"
-```
+````
 
 ## License
 

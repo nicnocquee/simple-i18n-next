@@ -12,7 +12,8 @@ export const interpolateTemplate = (text: string, data: Record<string, string>):
     return theText
   }
 export type SupportedLanguage = 'de' | 'en';
-  export const defaultLanguage: SupportedLanguage = 'en';
+export const defaultLanguage: SupportedLanguage = 'en';
+export const supportedLanguages: SupportedLanguage[] = ['de', 'en'];
   
 const deAnotherFileHello = "Hallo Welt in anderes Datei!"
 const deAnotherFileGreeting = "Hallo, anderes Datei {{name}}!"

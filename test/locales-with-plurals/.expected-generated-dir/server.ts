@@ -14,7 +14,8 @@ export const interpolateTemplate = (text: string, data: Record<string, string>):
     return theText
   }
 export type SupportedLanguage = 'de' | 'en';
-  export const defaultLanguage: SupportedLanguage = 'en';
+export const defaultLanguage: SupportedLanguage = 'en';
+export const supportedLanguages: SupportedLanguage[] = ['de', 'en'];
   
 const deHello = "Hallo Welt!"
 const deGreeting = "Hallo {{name}}!"

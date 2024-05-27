@@ -211,7 +211,8 @@ export function generateLocale({
     return theText
   }`,
     `export type SupportedLanguage = ${langs.map((lang) => `'${lang}'`).join(' | ')};
-  export const defaultLanguage: SupportedLanguage = '${baseLang}';
+export const defaultLanguage: SupportedLanguage = '${baseLang}';
+export const supportedLanguages: SupportedLanguage[] = [${langs.map((lang) => `'${lang}'`).join(', ')}];
   `,
   ]
   const localeFunctions: string[] = [...shared]
