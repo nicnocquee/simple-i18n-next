@@ -579,7 +579,10 @@ export const hello = (lang: SupportedLanguage) => {
   // content
 }
 
-export const greeting = (lang: SupportedLanguage) => {
+type greetingProps = {
+  name: string
+}
+export const greeting = (lang: SupportedLanguage, data: greetingProps) => {
   // content
 }
 
