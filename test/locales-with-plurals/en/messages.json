@@ -1,6 +1,6 @@
 {
   "hello": "Hello world!",
-  "greeting": "Hello {name}!",
+  "greeting": "Hello {{name}}!",
   "home": "Home",
   "apple_one": "An apple",
   "apple_other": "{{count}} apples",

@@ -1,13 +1,13 @@
 {
   "hello": "Hallo Welt in anderes Datei!",
-  "greeting": "Hallo, anderes Datei {name}!",
+  "greeting": "Hallo, anderes Datei {{name}}!",
   "home": "Startseite anderes Datei",
   "counter_one": "Ein Zähler",
   "counter_other": "{{count}} Zähler",
   "client": {
     "hello": "Hallo Welt in einer anderen Client-Datei!",
     "another": {
-      "bye": "auf Wiedersehen, {name}"
+      "bye": "auf Wiedersehen, {{name}}"
     }
   }
 }

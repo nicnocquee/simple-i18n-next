@@ -13,7 +13,7 @@ export type SupportedLanguage = 'en';
   export const defaultLanguage: SupportedLanguage = 'en';
   
 const enHello = "Hello world!"
-const enGreeting = "Hello {name}!"
+const enGreeting = "Hello {{name}}!"
 const enHome = "Home"
 export const hello = (lang: SupportedLanguage) => {
       switch (lang) {
@@ -22,12 +22,19 @@ export const hello = (lang: SupportedLanguage) => {
             return enHello
         }
     }
-export const greeting = (lang: SupportedLanguage) => {
+
+    type greetingProps = {
+  name: string;
+}
+    export const greeting = (lang: SupportedLanguage, data: greetingProps) => {
+      let text = ''
       switch (lang) {
-    case 'en': return enGreeting;
+    case 'en': text = enGreeting; break;
         default:
-            return enGreeting
+            text = enGreeting
         }
+
+      return interpolateTemplate(text, data)
     }
 export const home = (lang: SupportedLanguage) => {
       switch (lang) {

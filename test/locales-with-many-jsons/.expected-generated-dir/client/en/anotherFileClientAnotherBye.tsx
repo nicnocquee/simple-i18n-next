@@ -1,1 +1,1 @@
-export default "bye, {name}"
+export default "bye, {{name}}"

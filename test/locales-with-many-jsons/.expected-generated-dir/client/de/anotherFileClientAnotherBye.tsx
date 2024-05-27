@@ -1,1 +1,1 @@
-export default "auf Wiedersehen, {name}"
+export default "auf Wiedersehen, {{name}}"

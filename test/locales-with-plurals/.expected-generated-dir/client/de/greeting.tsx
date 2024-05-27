@@ -1,1 +1,1 @@
-export default "Hallo {name}!"
+export default "Hallo {{name}}!"

@@ -13,12 +13,12 @@ export type SupportedLanguage = 'de' | 'en';
   export const defaultLanguage: SupportedLanguage = 'en';
   
 const deHello = "Hallo Welt!"
-const deGreeting = "Hallo {name}!"
+const deGreeting = "Hallo {{name}}!"
 const deHome = "Startseite"
 const dePageTitle = "Seitentitel"
 const dePageSectionTitle = "Sektionentitel"
 const enHello = "Hello world!"
-const enGreeting = "Hello {name}!"
+const enGreeting = "Hello {{name}}!"
 const enHome = "Home"
 const enPageTitle = "Page title"
 const enPageSectionTitle = "Section title"
@@ -30,13 +30,20 @@ case 'en': return enHello;
             return enHello
         }
     }
-export const greeting = (lang: SupportedLanguage) => {
+
+    type greetingProps = {
+  name: string;
+}
+    export const greeting = (lang: SupportedLanguage, data: greetingProps) => {
+      let text = ''
       switch (lang) {
-    case 'de': return deGreeting;
-case 'en': return enGreeting;
+    case 'de': text = deGreeting; break;
+case 'en': text = enGreeting; break;
         default:
-            return enGreeting
+            text = enGreeting
         }
+
+      return interpolateTemplate(text, data)
     }
 export const home = (lang: SupportedLanguage) => {
       switch (lang) {

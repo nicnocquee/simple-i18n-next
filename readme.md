@@ -560,7 +560,7 @@ The generated constants and functions are using camelCase convention. For exampl
 ```json
 {
   "hello": "Hello world!",
-  "greeting": "Hello {name}!",
+  "greeting": "Hello {{name}}!",
   "home": "Home",
   "world-cup": "World cup"
 }
@@ -634,7 +634,7 @@ You have `locales/en/messages.json` and `locales/de/messages.json` files that co
 ```json
 {
   "hello": "Hello",
-  "greeting": "Hello {name}!",
+  "greeting": "Hello {{name}}!",
   "apple_one": "An apple",
   "apple_other": "{{count}} apples",
   "cat_ordinal_one": "1st cat",
@@ -647,7 +647,7 @@ You have `locales/en/messages.json` and `locales/de/messages.json` files that co
 ```json
 {
   "hello": "Hallo",
-  "greeting": "Hallo {name}!",
+  "greeting": "Hallo {{name}}!",
   "apple_one": "Ein Apfel",
   "apple_other": "{{count}} Äpfel",
   "cat_ordinal_other": "1. Katze"

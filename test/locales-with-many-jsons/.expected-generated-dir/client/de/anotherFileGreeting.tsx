@@ -1,1 +1,1 @@
-export default "Hallo, anderes Datei {name}!"
+export default "Hallo, anderes Datei {{name}}!"

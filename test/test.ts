@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable unicorn/prefer-module */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-await-in-loop */
 import { promises as fs } from 'node:fs'
@@ -11,6 +16,8 @@ test.before(async () => {
     await Promise.allSettled([
       fs.rm('./test/locales/.generated', { recursive: true }),
       fs.rm('./test/locales/.generated2', { recursive: true }),
+      fs.rm('./test/locales/.generated3', { recursive: true }),
+      fs.rm('./test/locales/.generated4', { recursive: true }),
       fs.rm('./test/locales-invalid-dir/.generated', { recursive: true }),
       fs.rm('./test/locales-invalid-dir/.generated2', { recursive: true }),
       fs.rm('./test/locales-invalid-dir/.generated3', { recursive: true }),
@@ -28,6 +35,8 @@ test.after(async () => {
     await Promise.allSettled([
       fs.rm('./test/locales/.generated', { recursive: true }),
       fs.rm('./test/locales/.generated2', { recursive: true }),
+      fs.rm('./test/locales/.generated3', { recursive: true }),
+      fs.rm('./test/locales/.generated4', { recursive: true }),
       fs.rm('./test/locales-invalid-dir/.generated', { recursive: true }),
       fs.rm('./test/locales-invalid-dir/.generated2', { recursive: true }),
       fs.rm('./test/locales-invalid-dir/.generated3', { recursive: true }),
@@ -341,6 +350,37 @@ test('getPluralKeys with ordinal unnecessary english', (t) => {
   t.true(arraysEqualIgnoringOrder(unnecessaryPluralOrdinalKeys, ['cat_ordinal_many']))
 })
 
+test('interpolation', (t) => {
+  generateLocale({
+    localesDir: path.resolve(process.cwd(), './test/locales'),
+    defaultLanguage: 'en',
+    outputDir: './test/locales/.generated3',
+    silent: true,
+  })
+
+  const jiti = require('jiti')(__filename)
+  const { greeting } = jiti('./locales/.generated3/server')
+
+  t.is(greeting('en', { name: 'Nico' }), 'Hello Nico!')
+})
+
+test('interpolation with multiple variables', (t) => {
+  generateLocale({
+    localesDir: path.resolve(process.cwd(), './test/locales'),
+    defaultLanguage: 'en',
+    outputDir: './test/locales/.generated4',
+    silent: true,
+  })
+
+  const jiti = require('jiti')(__filename)
+  const { welcome } = jiti('./locales/.generated4/server')
+
+  t.is(
+    welcome('en', { country: 'Switzerland', time: '4AM' }),
+    "Welcome to Switzerland! It's 4AM now."
+  )
+})
+
 function arraysEqualIgnoringOrder<T>(arr1: T[], arr2: T[]): boolean {
   if (arr1.length !== arr2.length) return false
 
@@ -405,8 +445,8 @@ function objectsEqualIgnoringOrder(obj1: Record<string, any>, obj2: Record<strin
 
   for (const key of keys1) {
     if (keys2.includes(key)) {
-      const value1 = obj1[key] // eslint-disable-line @typescript-eslint/no-unsafe-assignment
-      const value2 = obj2[key] // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+      const value1 = obj1[key]
+      const value2 = obj2[key]
 
       if (Array.isArray(value1) && Array.isArray(value2)) {
         if (!arraysEqualIgnoringOrder(value1, value2)) {

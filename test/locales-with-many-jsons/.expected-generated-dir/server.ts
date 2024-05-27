@@ -15,26 +15,26 @@ export type SupportedLanguage = 'de' | 'en';
   export const defaultLanguage: SupportedLanguage = 'en';
   
 const deAnotherFileHello = "Hallo Welt in anderes Datei!"
-const deAnotherFileGreeting = "Hallo, anderes Datei {name}!"
+const deAnotherFileGreeting = "Hallo, anderes Datei {{name}}!"
 const deAnotherFileHome = "Startseite anderes Datei"
 const deAnotherFileClientHello = "Hallo Welt in einer anderen Client-Datei!"
-const deAnotherFileClientAnotherBye = "auf Wiedersehen, {name}"
+const deAnotherFileClientAnotherBye = "auf Wiedersehen, {{name}}"
 const deHello = "Hallo Welt!"
-const deGreeting = "Hallo {name}!"
+const deGreeting = "Hallo {{name}}!"
 const deHome = "Startseite"
 const deSomethingHello = "Hallo Welt in etwas!"
 const deSomethingGreeting = "Hallo, etwas {name}!"
 const deSomethingHome = "Startseite etwas"
 const enAnotherFileHello = "Hello world in another file!"
-const enAnotherFileGreeting = "Hello, another file {name}!"
+const enAnotherFileGreeting = "Hello, another file {{name}}!"
 const enAnotherFileHome = "Home another file"
 const enAnotherFileClientHello = "Hello world in another client file!"
-const enAnotherFileClientAnotherBye = "bye, {name}"
+const enAnotherFileClientAnotherBye = "bye, {{name}}"
 const enHello = "Hello world!"
-const enGreeting = "Hello {name}!"
+const enGreeting = "Hello {{name}}!"
 const enHome = "Home"
 const enSomethingHello = "Hello world in something!"
-const enSomethingGreeting = "Hello, something {name}!"
+const enSomethingGreeting = "Hello, something {{name}}!"
 const enSomethingHome = "Home something"
 export const anotherFileHello = (lang: SupportedLanguage) => {
       switch (lang) {
@@ -44,13 +44,20 @@ case 'en': return enAnotherFileHello;
             return enAnotherFileHello
         }
     }
-export const anotherFileGreeting = (lang: SupportedLanguage) => {
+
+    type anotherFileGreetingProps = {
+  name: string;
+}
+    export const anotherFileGreeting = (lang: SupportedLanguage, data: anotherFileGreetingProps) => {
+      let text = ''
       switch (lang) {
-    case 'de': return deAnotherFileGreeting;
-case 'en': return enAnotherFileGreeting;
+    case 'de': text = deAnotherFileGreeting; break;
+case 'en': text = enAnotherFileGreeting; break;
         default:
-            return enAnotherFileGreeting
+            text = enAnotherFileGreeting
         }
+
+      return interpolateTemplate(text, data)
     }
 export const anotherFileHome = (lang: SupportedLanguage) => {
       switch (lang) {
@@ -68,13 +75,20 @@ case 'en': return enAnotherFileClientHello;
             return enAnotherFileClientHello
         }
     }
-export const anotherFileClientAnotherBye = (lang: SupportedLanguage) => {
+
+    type anotherFileClientAnotherByeProps = {
+  name: string;
+}
+    export const anotherFileClientAnotherBye = (lang: SupportedLanguage, data: anotherFileClientAnotherByeProps) => {
+      let text = ''
       switch (lang) {
-    case 'de': return deAnotherFileClientAnotherBye;
-case 'en': return enAnotherFileClientAnotherBye;
+    case 'de': text = deAnotherFileClientAnotherBye; break;
+case 'en': text = enAnotherFileClientAnotherBye; break;
         default:
-            return enAnotherFileClientAnotherBye
+            text = enAnotherFileClientAnotherBye
         }
+
+      return interpolateTemplate(text, data)
     }
 export const hello = (lang: SupportedLanguage) => {
       switch (lang) {
@@ -84,13 +98,20 @@ case 'en': return enHello;
             return enHello
         }
     }
-export const greeting = (lang: SupportedLanguage) => {
+
+    type greetingProps = {
+  name: string;
+}
+    export const greeting = (lang: SupportedLanguage, data: greetingProps) => {
+      let text = ''
       switch (lang) {
-    case 'de': return deGreeting;
-case 'en': return enGreeting;
+    case 'de': text = deGreeting; break;
+case 'en': text = enGreeting; break;
         default:
-            return enGreeting
+            text = enGreeting
         }
+
+      return interpolateTemplate(text, data)
     }
 export const home = (lang: SupportedLanguage) => {
       switch (lang) {
@@ -108,13 +129,20 @@ case 'en': return enSomethingHello;
             return enSomethingHello
         }
     }
-export const somethingGreeting = (lang: SupportedLanguage) => {
+
+    type somethingGreetingProps = {
+  name: string;
+}
+    export const somethingGreeting = (lang: SupportedLanguage, data: somethingGreetingProps) => {
+      let text = ''
       switch (lang) {
-    case 'de': return deSomethingGreeting;
-case 'en': return enSomethingGreeting;
+    case 'de': text = deSomethingGreeting; break;
+case 'en': text = enSomethingGreeting; break;
         default:
-            return enSomethingGreeting
+            text = enSomethingGreeting
         }
+
+      return interpolateTemplate(text, data)
     }
 export const somethingHome = (lang: SupportedLanguage) => {
       switch (lang) {

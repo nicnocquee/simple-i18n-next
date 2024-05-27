@@ -13,11 +13,13 @@ export type SupportedLanguage = 'de' | 'en';
   export const defaultLanguage: SupportedLanguage = 'en';
   
 const deHello = "Hallo Welt!"
-const deGreeting = "Hallo {name}!"
+const deGreeting = "Hallo {{name}}!"
 const deHome = "Startseite"
+const deWelcome = "Willkommen in {{country}}! Es ist {{time}} jetzt."
 const enHello = "Hello world!"
-const enGreeting = "Hello {name}!"
+const enGreeting = "Hello {{name}}!"
 const enHome = "Home"
+const enWelcome = "Welcome to {{country}}! It's {{time}} now."
 export const hello = (lang: SupportedLanguage) => {
       switch (lang) {
     case 'de': return deHello;
@@ -26,13 +28,20 @@ case 'en': return enHello;
             return enHello
         }
     }
-export const greeting = (lang: SupportedLanguage) => {
+
+    type greetingProps = {
+  name: string;
+}
+    export const greeting = (lang: SupportedLanguage, data: greetingProps) => {
+      let text = ''
       switch (lang) {
-    case 'de': return deGreeting;
-case 'en': return enGreeting;
+    case 'de': text = deGreeting; break;
+case 'en': text = enGreeting; break;
         default:
-            return enGreeting
+            text = enGreeting
         }
+
+      return interpolateTemplate(text, data)
     }
 export const home = (lang: SupportedLanguage) => {
       switch (lang) {
@@ -42,4 +51,20 @@ case 'en': return enHome;
             return enHome
         }
     }
-export type StringKeys = 'hello' | 'greeting' | 'home'
+
+    type welcomeProps = {
+  country: string;
+  time: string;
+}
+    export const welcome = (lang: SupportedLanguage, data: welcomeProps) => {
+      let text = ''
+      switch (lang) {
+    case 'de': text = deWelcome; break;
+case 'en': text = enWelcome; break;
+        default:
+            text = enWelcome
+        }
+
+      return interpolateTemplate(text, data)
+    }
+export type StringKeys = 'hello' | 'greeting' | 'home' | 'welcome'

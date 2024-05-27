@@ -1,13 +1,13 @@
 {
   "hello": "Hello world in another file!",
-  "greeting": "Hello, another file {name}!",
+  "greeting": "Hello, another file {{name}}!",
   "home": "Home another file",
   "counter_one": "One counter",
   "counter_other": "{{count}} counters",
   "client": {
     "hello": "Hello world in another client file!",
     "another": {
-      "bye": "bye, {name}"
+      "bye": "bye, {{name}}"
     }
   }
 }

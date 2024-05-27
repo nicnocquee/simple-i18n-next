@@ -1,5 +1,6 @@
 {
   "hello": "Hello world!",
-  "greeting": "Hello {name}!",
-  "home": "Home"
+  "greeting": "Hello {{name}}!",
+  "home": "Home",
+  "welcome": "Welcome to {{country}}! It's {{time}} now."
 }

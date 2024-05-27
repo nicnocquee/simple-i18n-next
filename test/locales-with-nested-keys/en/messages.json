@@ -1,6 +1,6 @@
 {
   "hello": "Hello world!",
-  "greeting": "Hello {name}!",
+  "greeting": "Hello {{name}}!",
   "home": "Home",
   "page": {
     "title": "Page title",
