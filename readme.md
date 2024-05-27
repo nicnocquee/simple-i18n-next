@@ -719,7 +719,7 @@ export default function LanguageSelector() {
 
 You can use the `defaultLanguage` string to get the default language in your application. For example
 
-````tsx
+```tsx
 import { defaultLanguage } from '@/locales/.generated/server'
 import { useRouter } from 'next/router'
 
@@ -727,9 +727,7 @@ export default function LanguageSelector() {
   const router = useRouter()
   return (
     <div>
-      <button onClick={() => router.push(`/${defaultLanguage}`)}>
-        {defaultLanguage}
-      </button>
+      <button onClick={() => router.push(`/${defaultLanguage}`)}>{defaultLanguage}</button>
     </div>
   )
 }
@@ -741,7 +739,7 @@ Run
 
 ```bash
 npx tsx source/cli.tsx -i "./locales"
-````
+```
 
 ## License
 
