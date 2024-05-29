@@ -14,7 +14,7 @@ The existing solutions for internationalization (i18n) in Next.js are too compli
 - Translation keys cover all languages. As a result, an error message will appear if a translation for a specific language is not added.
 - In RSC, the translations are generated inline, so no JS code is sent to the client.
 - Only necessary translations are sent. When using the generated `useStrings` hook in client components, only the required translation strings are sent, avoiding any unused translations.
-- You can use markdown files for each language.
+- You can use markdown or [MDX](https://mdxjs.com) files for each language.
 - Pluralization support.
 - Nested keys are supported.
 - Multiple JSON files are supported.
@@ -252,7 +252,7 @@ export default function HomePage() {
 }
 ```
 
-### The Markdown files
+### The Markdown MDX files
 
 Let's say you have a `locales/en/index/section1.mdx` file that contains the following content:
 
@@ -286,7 +286,41 @@ export default function HomePage({ params: { lang } }: { params: { lang: Support
 }
 ```
 
+Furthermore, since we're using MDX, we can pass props to the markdown and simple-18n-next will automatically generate the prop types. For example, if we have the following `locales/en/about.mdx` file:
+
+```mdx
+# Section 1
+
+This is the first section. My name is {props.name}.
+```
+
+The CLI will generate the following prop types:
+
+```typescript
+type AboutProps = {
+  name: string
+}
+```
+
+And when you use the generated component without passing the `name` prop, you will get TypeScript error!
+
+```tsx
+// app/[lang]/about.tsx
+import { SupportedLanguage } from '@/locales/.generated/server'
+import { About } from 'locales/.generated/locales-markdown'
+
+export default function AboutPage({ params: { lang } }: { params: { lang: SupportedLanguage } }) {
+  return (
+    <div>
+      <About lang={lang} /> {/* TypeScript error! name prop is missing */}
+    </div>
+  )
+}
+```
+
 Please make sure that you have set up your Next.js project to use Markdown and MDX by following the [official documentation](https://nextjs.org/docs/app/building-your-application/configuring/mdx).
+
+Check out the example demo [here](https://simple-i18n-next-example.vercel.app/en/about-markdown) and the code in the [repository](<https://github.com/nicnocquee/simple-i18n-next-example/blob/main/app/(with-lang)/%5Blang%5D/about-markdown/%5BuserId%5D/page.tsx>).
 
 ### Interpolation
 
