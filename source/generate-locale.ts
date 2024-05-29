@@ -537,16 +537,16 @@ export default function <<key>>WithOrdinalCount(count: number) {
     const defaultComponent = langComponents[componentName]?.[baseLang]
 
     const text = `export const ${componentName} = (props: {lang: SupportedLanguage } & ComponentProps<typeof ${defaultComponent}>) => {
-  const { lang, ...rest } = props
+  const { lang } = props
   switch (lang) {${langs
     .map(
       (lang) => `
     case '${lang}':
-      return <${component?.[lang]} {...rest} />;`
+      return <${component?.[lang]} {...props} />;`
     )
     .join('')}
     default:
-      return <${defaultComponent} {...rest} />
+      return <${defaultComponent} {...props} />
   }
 }
 `

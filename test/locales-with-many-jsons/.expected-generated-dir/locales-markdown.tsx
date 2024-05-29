@@ -19,13 +19,13 @@ import EnIndexMarkdown from '../en/index.mdx';
 const DeIndex = (props: ComponentProps<typeof DeIndexMarkdown>) => <DeIndexMarkdown {...props} />;
 const EnIndex = (props: ComponentProps<typeof EnIndexMarkdown>) => <EnIndexMarkdown {...props} />;
 export const Index = (props: {lang: SupportedLanguage } & ComponentProps<typeof EnIndex>) => {
-  const { lang, ...rest } = props
+  const { lang } = props
   switch (lang) {
     case 'de':
-      return <DeIndex {...rest} />;
+      return <DeIndex {...props} />;
     case 'en':
-      return <EnIndex {...rest} />;
+      return <EnIndex {...props} />;
     default:
-      return <EnIndex {...rest} />
+      return <EnIndex {...props} />
   }
 }
