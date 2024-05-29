@@ -241,7 +241,9 @@ export default function ComingSoonPage({
 import { useStrings } from '@/locales/.generated/client/hooks'
 
 export default function HomePage() {
-  const [{ hello, comingSoon }] = useStrings(['hello', 'comingSoon']) // the keys are typed! You cannot pass an invalid key.
+  const [{ hello, comingSoon }] = useStrings(['hello', 'comingSoon']) // the keys are typed!
+  // You cannot pass an invalid key.
+  // By default, it will return strings from the default language. Pass the language code as a second argument to get the translations from a specific language. E.g., useStrings(['hello'], 'de') to get the German translations.
 
   return (
     <div>
