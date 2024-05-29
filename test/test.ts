@@ -377,6 +377,18 @@ test('case insensitive key', (t) => {
   t.truthy(error)
 })
 
+test('reserved keyword', (t) => {
+  const error = t.throws(() => {
+    generateLocale({
+      localesDir: path.resolve(process.cwd(), './test/locales-with-reserved-keywords'),
+      defaultLanguage: 'en',
+      outputDir: './test/locales-with-reserved-keywords/.generated',
+      silent: true,
+    })
+  })
+  t.truthy(error)
+})
+
 function arraysEqualIgnoringOrder<T>(arr1: T[], arr2: T[]): boolean {
   if (arr1.length !== arr2.length) return false
 
