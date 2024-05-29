@@ -9,22 +9,17 @@ import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import crypto from 'node:crypto'
 import test from 'ava'
+import { glob } from 'glob'
 import { generateLocale, Plurals } from '../source/generate-locale.js'
+
+const getDirectories = async (pattern: string) => {
+  return glob(pattern)
+}
 
 test.before(async () => {
   try {
-    await Promise.allSettled([
-      fs.rm('./test/locales/.generated', { recursive: true }),
-      fs.rm('./test/locales/.generated2', { recursive: true }),
-      fs.rm('./test/locales/.generated3', { recursive: true }),
-      fs.rm('./test/locales/.generated4', { recursive: true }),
-      fs.rm('./test/locales-invalid-dir/.generated', { recursive: true }),
-      fs.rm('./test/locales-invalid-dir/.generated2', { recursive: true }),
-      fs.rm('./test/locales-invalid-dir/.generated3', { recursive: true }),
-      fs.rm('./test/locales-with-plurals/.generated3', { recursive: true }),
-      fs.rm('./test/locales-with-nested-keys/.generated3', { recursive: true }),
-      fs.rm('./test/locales-with-many-jsons/.generated', { recursive: true }),
-    ])
+    const files = await getDirectories('./test/**/.generated*')
+    await Promise.allSettled(files.map(async (file) => fs.rm(file, { recursive: true })))
   } catch (error) {
     console.log(error)
   }
@@ -32,19 +27,8 @@ test.before(async () => {
 
 test.after(async () => {
   try {
-    await Promise.allSettled([
-      fs.rm('./test/locales/.generated', { recursive: true }),
-      fs.rm('./test/locales/.generated2', { recursive: true }),
-      fs.rm('./test/locales/.generated3', { recursive: true }),
-      fs.rm('./test/locales/.generated4', { recursive: true }),
-      fs.rm('./test/locales-invalid-dir/.generated', { recursive: true }),
-      fs.rm('./test/locales-invalid-dir/.generated2', { recursive: true }),
-      fs.rm('./test/locales-invalid-dir/.generated3', { recursive: true }),
-      fs.rm('./test/locales-invalid-dir/.generated3', { recursive: true }),
-      fs.rm('./test/locales-with-plurals/.generated3', { recursive: true }),
-      fs.rm('./test/locales-with-nested-keys/.generated3', { recursive: true }),
-      fs.rm('./test/locales-with-many-jsons/.generated', { recursive: true }),
-    ])
+    const files = await getDirectories('./test/**/.generated*')
+    await Promise.allSettled(files.map(async (file) => fs.rm(file, { recursive: true })))
   } catch (error) {
     console.log(error)
   }
