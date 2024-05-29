@@ -365,6 +365,18 @@ test('interpolation with multiple variables', (t) => {
   )
 })
 
+test('case insensitive key', (t) => {
+  const error = t.throws(() => {
+    generateLocale({
+      localesDir: path.resolve(process.cwd(), './test/locales-with-case-insensitive-key'),
+      defaultLanguage: 'en',
+      outputDir: './test/locales-with-case-insensitive-key/.generated',
+      silent: true,
+    })
+  })
+  t.truthy(error)
+})
+
 function arraysEqualIgnoringOrder<T>(arr1: T[], arr2: T[]): boolean {
   if (arr1.length !== arr2.length) return false
 

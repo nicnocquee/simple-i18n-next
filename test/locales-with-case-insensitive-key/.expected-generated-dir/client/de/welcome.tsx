@@ -1,0 +1,1 @@
+export default "Willkommen in {{country}}! Es ist {{time}} jetzt."

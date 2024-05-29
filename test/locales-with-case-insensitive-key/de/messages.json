@@ -1,0 +1,8 @@
+{
+  "hello": "Hallo Welt!",
+  "greeting": "Hallo {{name}}!",
+  "home": "Startseite",
+  "welcome": "Willkommen in {{country}}! Es ist {{time}} jetzt.",
+  "score": "Punkte",
+  "Score": "Andere Punkte"
+}

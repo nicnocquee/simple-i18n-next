@@ -112,6 +112,24 @@ const generateComponent = (markdownContent: string, filepath: string, localesDir
   }
 }
 
+function findCaseInsensitiveDuplicates(json: Record<string, any>): string[] {
+  const lowerCaseKeys = new Set<string>()
+  const duplicates = new Set<string>()
+
+  for (const key in json) {
+    if (Object.hasOwn(json, key)) {
+      const lowerKey = key.toLowerCase()
+      if (lowerCaseKeys.has(lowerKey)) {
+        duplicates.add(key)
+      } else {
+        lowerCaseKeys.add(lowerKey)
+      }
+    }
+  }
+
+  return [...duplicates]
+}
+
 export function generateLocale({
   localesDir = path.join(process.cwd(), 'locales'),
   defaultLanguage,
@@ -218,6 +236,12 @@ export const supportedLanguages: SupportedLanguage[] = [${langs.map((lang) => `'
   const localeFunctions: string[] = [...shared]
 
   const baseKeys = Object.keys(baseMessagesJson)
+  const duplicates = findCaseInsensitiveDuplicates(baseMessagesJson)
+
+  if (duplicates.length > 0) {
+    throw new Error(`Duplicated keys found in base messages: ${duplicates.join(', ')}`)
+  }
+
   const errors: string[] = []
   const langFunctions: Record<string, Record<string, string>> = {}
   const propTypes: Record<string, ReturnType<typeof generatePropTypes>> = {}
