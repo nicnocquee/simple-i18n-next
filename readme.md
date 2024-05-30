@@ -185,7 +185,8 @@ export const clientHello = (lang: SupportedLanguage) => {
 You can use the generated code in your `page.tsx` by simply importing the generated function which corresponds to the key you want to use in your translation.
 
 ```tsx
-import { hello, SupportedLanguage } from 'locales/.generated/server'
+import { SupportedLanguage } from '@/locales/.generated/types'
+import { hello } from 'locales/.generated/server'
 
 export default function HomePage({ params: { lang } }: { params: { lang: SupportedLanguage } }) {
   return <div>{hello(lang)}</div>
@@ -202,7 +203,7 @@ There are two ways to use the translations in your client components:
 // app/[lang]/comingsoon/coming-soon.tsx
 'use client'
 
-import { StringKeys, SupportedLanguage } from '@/locales/.generated/server'
+import { StringKeys, SupportedLanguage } from '@/locales/.generated/types'
 
 export function ComingSoon({
   strings,
@@ -276,7 +277,7 @@ You can use the generated markdown component in your `page.tsx` file like this:
 
 ```tsx
 // app/[lang]/page.tsx
-import { SupportedLanguage } from '@/locales/.generated/server'
+import { SupportedLanguage } from '@/locales/.generated/types'
 import { IndexSection1 } from 'locales/.generated/locales-markdown'
 
 export default function HomePage({ params: { lang } }: { params: { lang: SupportedLanguage } }) {
@@ -308,7 +309,7 @@ And when you use the generated component without passing the `name` prop, you wi
 
 ```tsx
 // app/[lang]/about.tsx
-import { SupportedLanguage } from '@/locales/.generated/server'
+import { SupportedLanguage } from '@/locales/.generated/types'
 import { About } from 'locales/.generated/locales-markdown'
 
 export default function AboutPage({ params: { lang } }: { params: { lang: SupportedLanguage } }) {
@@ -338,7 +339,8 @@ In the `page.tsx` file, you can use the interpolated variable like this:
 
 ```tsx
 // app/[lang]/page.tsx
-import { hello, SupportedLanguage } from 'locales/.generated/server'
+import { SupportedLanguage } from '@/locales/.generated/types'
+import { hello } from 'locales/.generated/server'
 
 export default function HomePage({ params: { lang } }: { params: { lang: SupportedLanguage } }) {
   return <div>{hello(lang, { name: 'Nico' })}</div>
@@ -351,7 +353,7 @@ In a client component, you can use the interpolated variable like this:
 
 ```tsx
 'use client'
-import { interpolateTemplate } from '@/locales/.generated/server'
+import { interpolateTemplate } from '@/locales/.generated/common'
 
 export default function ClientComponent() {
   const [strings] = useStrings(['bye', 'home'])
@@ -377,7 +379,7 @@ Then in the `page.tsx` file, you can use the markdown component like this:
 
 ```tsx
 // app/[lang]/page.tsx
-import { SupportedLanguage } from '@/locales/.generated/server'
+import { SupportedLanguage } from '@/locales/.generated/types'
 import { About } from 'locales/.generated/locales-markdown'
 
 export default function HomePage({ params: { lang } }: { params: { lang: SupportedLanguage } }) {
@@ -419,8 +421,8 @@ and a `locales/de/messages.json` file that contains the following content:
 Then in the RSC component like `page.tsx`, you can use the generated function like this:
 
 ```tsx:page.tsx
+import { SupportedLanguage } from '@/locales/.generated/types'
 import {
-  SupportedLanguage,
   bookWithCount,
   movieWithOrdinalCount,
 } from "@/locales/.generated/server";
@@ -734,7 +736,7 @@ export default function ClientComponent() {
 You can use the `supportedLanguages` array to get the supported languages in your application. For example
 
 ```tsx
-import { supportedLanguages } from '@/locales/.generated/server'
+import { supportedLanguages } from '@/locales/.generated/types'
 import { useRouter } from 'next/router'
 
 export default function LanguageSelector() {
@@ -756,7 +758,7 @@ export default function LanguageSelector() {
 You can use the `defaultLanguage` string to get the default language in your application. For example
 
 ```tsx
-import { defaultLanguage } from '@/locales/.generated/server'
+import { defaultLanguage } from '@/locales/.generated/types'
 import { useRouter } from 'next/router'
 
 export default function LanguageSelector() {
