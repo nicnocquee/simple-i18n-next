@@ -1,9 +1,5 @@
-import {
-  StringKeys,
-  SupportedLanguage,
-  defaultLanguage,
-  interpolateTemplate,
-} from "../server";
+import { interpolateTemplate } from "../common";
+import { SupportedLanguage, defaultLanguage, StringKeys } from '../types';
 import { useState, useMemo, useEffect } from "react";
 
 type Identity<T> = T extends object ? { [K in keyof T]: T[K] } : T;
