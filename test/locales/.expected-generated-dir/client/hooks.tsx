@@ -17,14 +17,14 @@ export const useStrings = <T extends StringKeys>(
   lang: SupportedLanguage = defaultLanguage
 ): [
   Record<Identity<StringKeysWithoutCount<T>>, string> | null,
-  Record<Identity<StringKeysWithCount<T>>, WithCountFunc> | null
+  Record<StringKeysWithCount<T>, WithCountFunc> | null
 ] => {
   const [strings, setStrings] = useState<Record<
     Identity<StringKeysWithoutCount<T>>,
     string
   > | null>(null);
   const [plurals, setPlurals] = useState<Record<
-    Identity<StringKeysWithCount<T>>,
+    StringKeysWithCount<T>,
     WithCountFunc
   > | null>(null);
 
@@ -79,7 +79,7 @@ export const useStrings = <T extends StringKeys>(
                     },
                   }
                 : acc,
-            {} as Record<Identity<StringKeysWithCount<T>>, WithCountFunc>
+            {} as Record<StringKeysWithCount<T>, WithCountFunc>
           );
 
         setStrings(strings);
