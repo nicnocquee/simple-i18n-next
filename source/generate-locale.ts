@@ -9,9 +9,9 @@ import { fileURLToPath } from 'node:url'
 const __filename = fileURLToPath(import.meta.url)
 const dirName = path.dirname(__filename)
 // Capitalize the first letter of a string
-const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
+export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
-function getDirectories(currentPath: string): string[] {
+export function getDirectories(currentPath: string): string[] {
   return fs.readdirSync(currentPath).filter((file) => {
     return fs.statSync(path.join(currentPath, file)).isDirectory() && !file.startsWith('.')
   })
@@ -24,7 +24,7 @@ function showLog(message: string, silent: boolean) {
 }
 
 // Convert an array of strings to camelCase
-function arrayToCamelCase(arr: string[]): string {
+export function arrayToCamelCase(arr: string[]): string {
   const expand = arr.flatMap((item) => {
     const makeItSafe = item.replace(/[^a-zA-Z\d]+/g, ' ')
     const split = makeItSafe.split(' ')
@@ -36,7 +36,7 @@ function arrayToCamelCase(arr: string[]): string {
 }
 
 // Generate TypeScript prop types from a template string
-function generatePropTypes(template: string, functionName: string) {
+export function generatePropTypes(template: string, functionName: string) {
   const regex = /{{\s*(\w+)\s*}}/g
   const props = new Set<string>()
 
@@ -60,7 +60,7 @@ function generatePropTypes(template: string, functionName: string) {
 }
 
 // Generate component name from file path
-function componentNameFromFilepath(filepath: string) {
+export function componentNameFromFilepath(filepath: string) {
   const parts = filepath
     .split('/')
     .filter((p) => p.trim() !== '.')
@@ -70,7 +70,7 @@ function componentNameFromFilepath(filepath: string) {
 }
 
 // Find all .mdx files recursively in a directory
-function findMdxFiles(dir: string): string[] {
+export function findMdxFiles(dir: string): string[] {
   const entries = fs.readdirSync(dir, { withFileTypes: true })
   const files = entries.map((entry) => {
     const entryPath = path.join(dir, entry.name)
@@ -88,7 +88,11 @@ function findMdxFiles(dir: string): string[] {
 }
 
 // Generate a React component from markdown content and file path
-const generateComponent = (markdownContent: string, filepath: string, localesDir: string) => {
+export const generateComponent = (
+  markdownContent: string,
+  filepath: string,
+  localesDir: string
+) => {
   // Regular expression to find {props.something}
   const propMatches = markdownContent.match(/{props\.(\w+)}/g)
 
@@ -112,7 +116,7 @@ const generateComponent = (markdownContent: string, filepath: string, localesDir
   }
 }
 
-function findCaseInsensitiveDuplicates(json: Record<string, any>): string[] {
+export function findCaseInsensitiveDuplicates(json: Record<string, any>): string[] {
   const lowerCaseKeys = new Set<string>()
   const duplicates = new Set<string>()
 
@@ -130,18 +134,7 @@ function findCaseInsensitiveDuplicates(json: Record<string, any>): string[] {
   return [...duplicates]
 }
 
-export function generateLocale({
-  localesDir = path.join(process.cwd(), 'locales'),
-  defaultLanguage,
-  outputDir: outputDirPath,
-  silent,
-}: {
-  localesDir: string
-  defaultLanguage?: string
-  outputDir?: string
-  silent: boolean
-}) {
-  // Define the locales directory and supported languages
+export function getLanguages(localesDir: string): { langs: string[]; invalidLangs: string[] } {
   const displayNames = new Intl.DisplayNames(['en'], { type: 'language' })
   const dirNames: string[] = getDirectories(localesDir)
   const invalidLangs: string[] = []
@@ -154,6 +147,23 @@ export function generateLocale({
       langs.push(dirName)
     }
   }
+
+  return { langs, invalidLangs }
+}
+
+export function generateLocale({
+  localesDir = path.join(process.cwd(), 'locales'),
+  defaultLanguage,
+  outputDir: outputDirPath,
+  silent,
+}: {
+  localesDir: string
+  defaultLanguage?: string
+  outputDir?: string
+  silent: boolean
+}) {
+  // Define the locales directory and supported languages
+  const { langs, invalidLangs } = getLanguages(localesDir)
 
   if (invalidLangs.length > 0) {
     showLog(
