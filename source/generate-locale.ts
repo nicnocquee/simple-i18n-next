@@ -151,6 +151,16 @@ export function getLanguages(localesDir: string): { langs: string[]; invalidLang
   return { langs, invalidLangs }
 }
 
+export const getJsonFileNames = (dir: string): string[] => {
+  try {
+    const files = fs.readdirSync(dir)
+    return files.filter((file) => path.extname(file) === '.json')
+  } catch (error) {
+    console.error('Error reading directory:', error)
+    return []
+  }
+}
+
 export function generateLocale({
   localesDir = path.join(process.cwd(), 'locales'),
   defaultLanguage,
@@ -185,16 +195,6 @@ export function generateLocale({
   }
 
   const baseLang = defaultLanguage ?? (langs[0] as (typeof langs)[number])
-
-  const getJsonFileNames = (dir: string): string[] => {
-    try {
-      const files = fs.readdirSync(dir)
-      return files.filter((file) => path.extname(file) === '.json')
-    } catch (error) {
-      console.error('Error reading directory:', error)
-      return []
-    }
-  }
 
   // Read and parse the base language messages
   let baseMessagesJson = {}
