@@ -1,23 +1,26 @@
-# simple-i18n-next [BETA]
+# simple-i18n-next
 
 This is a CLI to generate TypeScript code from translation files in JSON format and Markdown files for [Next.js](https://nextjs.org/) projects.
 
-_Note that this CLI is still WIP. It means every update might break your project._
-
 ## Why?
 
-The existing solutions for internationalization (i18n) in Next.js are too complicated for my taste. There are too many things to set up, and many are not type-safe.
+Making your Next.js project support multiple languages should be simple. There shouldn't be too much setup involved. The existing solutions for internationalization (i18n) in Next.js are too complicated for my taste, e.g., you need to instantiate an instance, add middleware, etc. I just want to have a dictionary of translations and use it in my components. That's it.
 
 ## Features
 
-- Type safe translation. That means there will be build-time errors if you use a translation key that does not exist in a specific language.
-- Translation keys cover all languages. As a result, an error message will appear if a translation for a specific language is not added.
-- In RSC, the translations are generated inline, so no JS code is sent to the client.
-- Only necessary translations are sent. When using the generated `useStrings` hook in client components, only the required translation strings are sent, avoiding any unused translations.
-- You can use markdown or [MDX](https://mdxjs.com) files for each language.
-- Pluralization support.
-- Nested keys are supported.
-- Multiple JSON files are supported.
+- **Type-safe translation**. That means there will be build-time errors if you use a translation key that does not exist in a specific language.
+- **Build-time error when missing translations**. Translation keys must cover all languages. As a result, an error message will appear if a translation for a specific language is missing.
+- **No JS code is sent to the client**. In React Server Components (RSC), the translations are generated inline during build time, so no JS code is sent to the client.
+- **Only necessary translations are sent**. When using the generated `useStrings` hook in client components, only the required translation strings are sent, avoiding any unused translations.
+- **Markdown or MDX files are supported**. You can use Markdown or [MDX](https://mdxjs.com) files for each language.
+- **Pluralization support** with a simple syntax.
+- **Support for nested keys in the JSON files**.
+- **Support for multiple JSON files**.
+
+What this CLI is not or does not do:
+
+- It does not have language detection. You need to pass the language code to the generated functions. You can easily get the language code from the URL pathname if you follow the [Internationalization documentation of Next.js](https://nextjs.org/docs/app/guides/internationalization#routing-overview).
+- It does not support various localization sources. You can only use JSON files and Markdown files.
 
 ## Install
 
@@ -50,6 +53,12 @@ npx simple-i18n-next -i ./locales
 ## Video Demo
 
 [![Watch the video](https://img.youtube.com/vi/AlDYslqj3Do/default.jpg)](https://www.youtube.com/watch?v=AlDYslqj3Do)
+
+## How it works
+
+1. The CLI will search for all the JSON files in the `locales` directory.
+2. It will then create JavaScript functions for each translation key.
+3. You use the generated functions in your components.
 
 ## How to use
 
@@ -148,7 +157,17 @@ Note that if you don't specify the default language with the `-l` flag, the firs
 
 ### Camel case convention
 
-Every key in the JSON files is converted to camel case convention. When the keys are from the default `messages.json` file, they are not prefixed with the file name. For example, if you have the following `locales/en/messages.json` file:
+Every key in the JSON files is converted to camel case convention. The table below summarizes how the generated function names are derived:
+
+| Source File              | JSON Key             | Generated Function Name | Example Function Call         |
+| ------------------------ | -------------------- | ----------------------- | ----------------------------- |
+| messages.json (default)  | "hello"              | hello                   | `hello(lang)`                 |
+| client.json (other file) | "hello"              | clientHello             | `clientHello(lang)`           |
+| messages.json (default)  | "page.title"         | pageTitle               | `pageTitle(lang)`             |
+| messages.json (default)  | "page.section.title" | pageSectionTitle        | `pageSectionTitle(lang)`      |
+| client.json (other file) | "user.profile.name"  | clientUserProfileName   | `clientUserProfileName(lang)` |
+
+When the keys are from the default `messages.json` file, they are not prefixed with the file name. For example, if you have the following `locales/en/messages.json` file:
 
 ```json
 {
@@ -180,9 +199,51 @@ export const clientHello = (lang: SupportedLanguage) => {
 }
 ```
 
+### Interpolation
+
+In the JSON files, you can use interpolation by using the `{{variable_name}}` syntax. For example, you can create a `locales/en/messages.json` file that contains the following content:
+
+```json
+{
+  "hello": "Hello, {{name}}!"
+}
+```
+
+In the React components, you can use the interpolated variable like this:
+
+```tsx
+// app/[lang]/page.tsx
+import { SupportedLanguage } from '@/locales/.generated/types'
+import { hello } from 'locales/.generated/server'
+
+export default function HomePage({ params: { lang } }: { params: { lang: SupportedLanguage } }) {
+  return <div>{hello(lang, { name: 'Nico' })}</div>
+}
+```
+
+The generated function is fully typed so you have to pass the correct variable name to the function as shown above.
+
+In a client component, you can use the interpolated variables with the `interpolateTemplate` function.
+
+```tsx
+'use client'
+import { interpolateTemplate } from '@/locales/.generated/common'
+
+export default function ClientComponent() {
+  const [strings] = useStrings(['bye', 'home'])
+  if (!strings) return null
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-between p-24">
+      <h1>{interpolateTemplate(strings.bye, { name: 'John' })}</h1>
+      <Link href={`/`}>{strings.home}</Link>
+    </div>
+  )
+}
+```
+
 ### In React Server Components (RSC)
 
-You can use the generated code in your `page.tsx` by simply importing the generated function which corresponds to the key you want to use in your translation.
+To use translations in React Server Components (RSC), import the generated function for your translation key and call it with the language parameter.
 
 ```tsx
 import { SupportedLanguage } from '@/locales/.generated/types'
@@ -195,9 +256,9 @@ export default function HomePage({ params: { lang } }: { params: { lang: Support
 
 ### In Client Components
 
-There are two ways to use the translations in your client components:
+There are two ways to use the translations in your client components.
 
-1. Pass the required translations [from the server component to the client component as props](https://nextjs.org/docs/app/building-your-application/rendering/composition-patterns#passing-props-from-server-to-client-components-serialization).
+1. Pass the required translations [from the server component to the client component as props](https://nextjs.org/docs/app/building-your-application/rendering/composition-patterns#passing-props-from-server-to-client-components-serialization). This is the recommended way.
 
 ```tsx
 // app/[lang]/comingsoon/coming-soon.tsx
@@ -257,7 +318,7 @@ export default function HomePage() {
 
 ### The Markdown MDX files
 
-Let's say you have a `locales/en/index/section1.mdx` file that contains the following content:
+Let's say you have a `locales/en/index/section1.mdx` file that contains the following English content:
 
 ```mdx
 # Section 1
@@ -265,7 +326,7 @@ Let's say you have a `locales/en/index/section1.mdx` file that contains the foll
 This is the first section.
 ```
 
-And a `locales/de/index/section1.mdx` file that contains the following content:
+And a `locales/de/index/section1.mdx` file that contains the following German content:
 
 ```mdx
 # Sektion 1
@@ -289,7 +350,9 @@ export default function HomePage({ params: { lang } }: { params: { lang: Support
 }
 ```
 
-Furthermore, since we're using MDX, we can pass props to the markdown and simple-18n-next will automatically generate the prop types. For example, if we have the following `locales/en/about.mdx` file:
+#### Markdown Interpolation
+
+In the Markdown files, you can use interpolation by using the `{props.variable_name}` syntax. For example, if you have the following `locales/en/about.mdx` file:
 
 ```mdx
 # Section 1
@@ -316,6 +379,7 @@ export default function AboutPage({ params: { lang } }: { params: { lang: Suppor
   return (
     <div>
       <About lang={lang} /> {/* TypeScript error! name prop is missing */}
+      <About lang={lang} name="John" /> {/* No error! */}
     </div>
   )
 }
@@ -325,77 +389,28 @@ Please make sure that you have set up your Next.js project to use Markdown and M
 
 Check out the example demo [here](https://simple-i18n-next-example.vercel.app/en/about-markdown) and the code in the [repository](<https://github.com/nicnocquee/simple-i18n-next-example/blob/main/app/(with-lang)/%5Blang%5D/about-markdown/%5BuserId%5D/page.tsx>).
 
-### Interpolation
-
-In the `messages.json` file, you can use interpolation by using the `{{variable_name}}` syntax. For example, you can create a `locales/en/messages.json` file that contains the following content:
-
-```json
-{
-  "hello": "Hello, {{name}}!"
-}
-```
-
-In the `page.tsx` file, you can use the interpolated variable like this:
-
-```tsx
-// app/[lang]/page.tsx
-import { SupportedLanguage } from '@/locales/.generated/types'
-import { hello } from 'locales/.generated/server'
-
-export default function HomePage({ params: { lang } }: { params: { lang: SupportedLanguage } }) {
-  return <div>{hello(lang, { name: 'Nico' })}</div>
-}
-```
-
-The generated function is fully typed so you have to pass the correct variable name to the function as shown above.
-
-In a client component, you can use the interpolated variable like this:
-
-```tsx
-'use client'
-import { interpolateTemplate } from '@/locales/.generated/common'
-
-export default function ClientComponent() {
-  const [strings] = useStrings(['bye', 'home'])
-  if (!strings) return null
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1>{interpolateTemplate(strings.bye, { name: 'John' })}</h1>
-      <Link href={`/`}>{strings.home}</Link>
-    </div>
-  )
-}
-```
-
-In the markdown file, you can use the interpolated variable like this:
-
-```mdx
-# About
-
-This is the about page. My name is {props.name}
-```
-
-Then in the `page.tsx` file, you can use the markdown component like this:
-
-```tsx
-// app/[lang]/page.tsx
-import { SupportedLanguage } from '@/locales/.generated/types'
-import { About } from 'locales/.generated/locales-markdown'
-
-export default function HomePage({ params: { lang } }: { params: { lang: SupportedLanguage } }) {
-  return (
-    <div>
-      <About lang={lang} name="Nico" />
-    </div>
-  )
-}
-```
-
 ### Plurals
 
-This CLI also generates code for plurals for both [ordinal and cardinal numbers](https://en.wikipedia.org/wiki/Ordinal_numeral). You need to add one of the following suffixes to let the script know that you want to use plurals: `_one`, `_two`, `_few`, `_many`, `_other`, or `_zero` for cardinal numbers, and `_ordinal_one`, `_ordinal_two`, `_ordinal_few`, `_ordinal_many`, `_ordinal_other`, or `_ordinal_zero` for ordinal numbers. You can read more about these plural rules from the [CLDR website](https://cldr.unicode.org/index/cldr-spec/plural-rules).
+This CLI also generates code for plurals for both [ordinal and cardinal numbers](https://en.wikipedia.org/wiki/Ordinal_numeral). You need to add one of the following suffixes to let the script know that you want to use plurals:
 
-For example, you can create a `locales/en/messages.json` file that contains the following content:
+| Type             | Suffix           | Description                               |
+| ---------------- | ---------------- | ----------------------------------------- |
+| Cardinal numbers | `_one`           | Used when count equals 1                  |
+| Cardinal numbers | `_two`           | Used when count equals 2                  |
+| Cardinal numbers | `_few`           | Used for small quantities (typically 3-4) |
+| Cardinal numbers | `_many`          | Used for larger quantities                |
+| Cardinal numbers | `_other`         | Used for most quantities (default case)   |
+| Cardinal numbers | `_zero`          | Used when count equals 0                  |
+| Ordinal numbers  | `_ordinal_one`   | Used for 1st position                     |
+| Ordinal numbers  | `_ordinal_two`   | Used for 2nd position                     |
+| Ordinal numbers  | `_ordinal_few`   | Used for 3rd position                     |
+| Ordinal numbers  | `_ordinal_many`  | Used for larger positions                 |
+| Ordinal numbers  | `_ordinal_other` | Used for most positions (default case)    |
+| Ordinal numbers  | `_ordinal_zero`  | Used for 0th position                     |
+
+You can read more about these plural rules from the [CLDR website](https://cldr.unicode.org/index/cldr-spec/plural-rules).
+
+For example, you can create a `locales/en/messages.json` file that contains the following English content:
 
 ```json:locales/en/messages.json
 {
@@ -408,7 +423,7 @@ For example, you can create a `locales/en/messages.json` file that contains the 
 }
 ```
 
-and a `locales/de/messages.json` file that contains the following content:
+and a `locales/de/messages.json` file that contains the following German content:
 
 ```json:locales/de/messages.json
 {
@@ -492,7 +507,7 @@ and when the language is English (`en`):
 </main>
 ```
 
-In a client component, you can use the generated function like this:
+In a client component, you can use the generated plural functions like this:
 
 ```tsx:client/page.tsx
 "use client";
@@ -531,7 +546,7 @@ export default function ClientComponent() {
 }
 ```
 
-Note that the plural rules for cardinal and ordinal numbers for a given language can be different. For example, in English, the plural rule for cardinal numbers is `one` and `other`, while the plural rule for ordinal numbers is `one`, `two`, `few`, and `other`. On the other hand, in German, the plural rule for cardinal numbers is `one` and `other`, while the plural rule for ordinal numbers is only `other`.
+Note that the plural rules for cardinal and ordinal numbers for a given language can be different. For example, in English, the plural rule for cardinal numbers is `one` and `other`, while the plural rule for ordinal numbers is `one`, `two`, `few`, and `other`. On the other hand, in German, the plural rule for cardinal numbers is `one` and `other`, while the plural rule for ordinal numbers is _only_ `other`.
 
 You can find out the plural rules for a given language by executing the following statement in the Node.js REPL or browser console:
 
@@ -593,7 +608,7 @@ You can checkout the sample Next.js project that uses this CLI [in this reposito
 
 ### Generated constants and functions
 
-The generated constants and functions are using camelCase convention. For example, if you have the followng `locales/en/messages.json` file:
+The generated constants and functions are using **camelCase** convention. For example, if you have the followng `locales/en/messages.json` file:
 
 ```json
 {
@@ -629,7 +644,9 @@ export const home = (lang: SupportedLanguage) => {
 }
 ```
 
-For the plural keys, the CLI will generate functions with the format: `<key>WithCount` for cardinal numbers and `<key>WithOrdinalCount` for ordinal numbers. For example, if you have the following `locales/en/messages.json` file:
+For the plural keys, the CLI will generate functions with the format: `<key>WithCount` for cardinal numbers and `<key>WithOrdinalCount` for ordinal numbers.
+
+For example, if you have the following `locales/en/messages.json` file:
 
 ```json
 {
@@ -785,4 +802,4 @@ MIT
 
 ## Contact
 
-[Nico Prananta](https://twitter.com/2co_p)
+[Nico Prananta](https://bsky.app/profile/nico.fyi)

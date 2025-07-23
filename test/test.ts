@@ -397,7 +397,6 @@ function arraysEqualIgnoringOrder<T>(arr1: T[], arr2: T[]): boolean {
 
   for (const [i, element] of sortedArr1.entries()) {
     if (Array.isArray(element) && Array.isArray(sortedArr2[i])) {
-      // @ts-expect-error
       if (!arraysEqualIgnoringOrder(element, sortedArr2[i])) return false
     } else if (element !== sortedArr2[i]) return false
   }
