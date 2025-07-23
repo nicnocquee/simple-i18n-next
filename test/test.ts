@@ -3,7 +3,6 @@
 /* eslint-disable unicorn/prefer-module */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-await-in-loop */
 import { promises as fs } from 'node:fs'
 import path from 'node:path'

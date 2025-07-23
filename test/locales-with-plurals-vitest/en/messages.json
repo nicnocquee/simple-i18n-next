@@ -1,0 +1,12 @@
+{
+  "hello": "Hello world!",
+  "greeting": "Hello {{name}}!",
+  "home": "Home",
+  "apple_one": "An apple",
+  "apple_other": "{{count}} apples",
+  "cat_ordinal_one": "1st cat",
+  "cat_ordinal_two": "2nd cat",
+  "cat_ordinal_few": "3rd cat",
+  "cat_ordinal_other": "{{count}}th cat",
+  "welcome": "Welcome to {{country}}! It's {{time}} now."
+}

@@ -38,7 +38,12 @@
   "scripts": {
     "build": "rimraf dist && tsc && npm run copy-files",
     "dev": "tsc --watch",
-    "test": "prettier --check . && xo && tsx node_modules/.bin/ava",
+    "check:format": "prettier --check .",
+    "check:lint": "xo",
+    "check": "npm run check:format && npm run check:lint",
+    "test:ava": "tsx node_modules/.bin/ava",
+    "test": "npm run check && npm run test:ava && npm run test:vitest",
+    "test:vitest": "vitest --environment jsdom --run",
     "copy-files": "copyfiles -f readme.md source/hooks.template LICENSE dist/",
     "bump": "npm version patch --force",
     "prepublishOnly": "npm run bump && npm run build"
@@ -53,6 +58,8 @@
   },
   "devDependencies": {
     "@sindresorhus/tsconfig": "^5.0.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
     "@vdemedes/prettier-config": "^2.0.1",
     "ava": "^6.1.2",
     "concurrently": "^8.2.2",
@@ -62,29 +69,39 @@
     "eslint-plugin-react-hooks": "^4.6.2",
     "execa": "^9.1.0",
     "jiti": "^1.21.0",
+    "jsdom": "^26.1.0",
     "prettier": "^3.2.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "rimraf": "^5.0.5",
     "ts-node": "^10.9.2",
-    "tsx": "^4.9.1",
+    "tsx": "^4.20.3",
     "typescript": "^5.4.5",
+    "vitest": "^3.2.4",
     "xo": "^0.58.0"
   },
   "ava": {
     "files": [
       "test/**/*",
       "!test/exclude-files-in-this-directory",
-      "!**/exclude-files-with-this-name.*"
+      "!**/exclude-files-with-this-name.*",
+      "!test/use-strings.hook.test.tsx"
     ],
     "extensions": {
       "js": true,
-      "ts": "commonjs"
+      "ts": "commonjs",
+      "tsx": "commonjs"
+    },
+    "environmentVariables": {
+      "NODE_ENV": "test"
     }
   },
   "xo": {
     "extends": "xo-react",
     "prettier": true,
+    "ignores": [
+      "**/*.test.tsx"
+    ],
     "rules": {
       "react/prop-types": "off",
       "unicorn/prevent-abbreviations": "off",
