@@ -1,19 +1,16 @@
-# dataqueue
+# simple-i18n-next
 
-![DataQueue](./apps/website/app/opengraph-image.png)
-
-A lightweight, PostgreSQL-backed job queue for Node.js/TypeScript projects. Schedule, process, and manage background jobs with ease. Perfect for web apps (Next.js, etc.) deployed to serverless platforms like Vercel, AWS Lambda, etc.
+A simple CLI to make your React TypeScript project i18n-ready. It's not a library.
 
 ## Installation
 
 ```bash
-npm install @nicnocquee/dataqueue
-npm install -D node-pg-migrate ts-node
+npm install -g simple-i18n-next
 ```
 
 ## Documentation
 
-See [docs.dataqueue.dev](https://docs.dataqueue.dev) for the complete documentation.
+See [https://github.com/nicnocquee/simple-i18n-next](https://github.com/nicnocquee/simple-i18n-next) for the complete documentation.
 
 ## Contributing
 
