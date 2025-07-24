@@ -43,7 +43,7 @@
     "check": "npm run check:format && npm run check:lint",
     "test": "npm run check && npm run test:vitest",
     "test:vitest": "vitest --environment jsdom --run",
-    "copy-files": "copyfiles -f readme.md source/hooks.template LICENSE dist/ source/mdx.d.ts",
+    "copy-files": "copyfiles -f readme.md source/mdx.d.ts source/hooks.template LICENSE dist/",
     "bump": "npm version patch --force",
     "prepublishOnly": "npm run bump && npm run build"
   },
