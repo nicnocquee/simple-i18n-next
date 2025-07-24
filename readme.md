@@ -1,6 +1,6 @@
 # simple-i18n-next
 
-This is a CLI to generate TypeScript code from translation files in JSON format and Markdown files for TypeScript projects. It's been tested with [Next.js](https://nextjs.org/) and [React Router](https://reactrouter.com/home) projects.
+This is a CLI to generate TypeScript code from translation files in JSON format and Markdown files for TypeScript React projects. It's been tested with [Next.js](https://nextjs.org/) and [React Router](https://reactrouter.com/home) projects.
 
 ## Why?
 
