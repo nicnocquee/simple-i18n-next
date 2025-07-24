@@ -10,7 +10,7 @@ npm install -g simple-i18n-next
 
 ## Documentation
 
-See [https://github.com/nicnocquee/simple-i18n-next](https://github.com/nicnocquee/simple-i18n-next) for the complete documentation.
+See [https://doc-simple-i18n-next.netlify.app](https://doc-simple-i18n-next.netlify.app) for the complete documentation.
 
 ## Contributing
 
