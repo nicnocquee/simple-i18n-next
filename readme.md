@@ -72,7 +72,7 @@ Demo of using this CLI with a React Router project:
 
 To get started:
 
-1. Create a `locales` directory in your Next.js project. This directory will contain the translation files in JSON format and Markdown files.
+1. Create a `locales` directory in your Next.js or React Router project. This directory will contain the translation files in JSON format and Markdown files.
 2. For each language you want to support, create a new directory in the `locales` directory. The name of the directory must be one of the [valid language codes](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). For example, if you want to support English, French, and Italian, you will create the following directories: `en`, `fr`, and `it`.
 3. In each language directory, create a `messages.json` file. This file will contain the translations for the language. For example, you can create a `locales/en/messages.json` file that contains the following content:
 
@@ -398,6 +398,8 @@ export default function AboutPage({ params: { lang } }: { params: { lang: Suppor
 Please make sure that you have set up your Next.js project to use Markdown and MDX by following the [official documentation](https://nextjs.org/docs/app/building-your-application/configuring/mdx).
 
 Check out the example demo [here](https://simple-i18n-next-example.vercel.app/en/about-markdown) and the code in the [repository](<https://github.com/nicnocquee/simple-i18n-next-example/blob/main/app/(with-lang)/%5Blang%5D/about-markdown/%5BuserId%5D/page.tsx>).
+
+For React Router, you need to install `@mdx-js/rollup` and `@mdx-js/react`, then [update the vite config file](https://mdxjs.com/docs/getting-started/#vite). You can also check the [demo project](https://github.com/nicnocquee/simple-i18n-next-demo-react-router) for more details.
 
 ### Plurals
 
