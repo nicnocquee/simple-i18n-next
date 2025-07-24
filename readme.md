@@ -1,10 +1,10 @@
 # simple-i18n-next
 
-This is a CLI to generate TypeScript code from translation files in JSON format and Markdown files for [Next.js](https://nextjs.org/) projects.
+This is a CLI to generate TypeScript code from translation files in JSON format and Markdown files for TypeScript projects. It's been tested with [Next.js](https://nextjs.org/) and [React Router](https://reactrouter.com/home) projects.
 
 ## Why?
 
-Making your Next.js project support multiple languages should be simple. There shouldn't be too much setup involved. The existing solutions for internationalization (i18n) in Next.js are too complicated for my taste, e.g., you need to instantiate an instance, add middleware, etc. I just want to have a dictionary of translations and use it in my components. That's it.
+Making your Next.js project support multiple languages should be simple. There shouldn't be too much setup involved. The existing solutions for internationalization (i18n) like react-18next are too complicated for my taste, e.g., you need to instantiate an instance, add middleware, etc. I just want to have a dictionary of translations and use it in my components. That's it. If you're like me, this CLI is for you too.
 
 ## Features
 
@@ -23,6 +23,8 @@ What this CLI is not or does not do:
 - It does not support various localization sources. You can only use JSON files and Markdown files.
 
 ## Install
+
+Install the CLI globally or locally in your project.
 
 ```bash
 npm i -g simple-i18n-next
@@ -50,14 +52,20 @@ npx simple-i18n-next -i ./locales
     $ simple-i18n-next -i ./locales
 ```
 
-## Video Demo
+## Demo
+
+Video demo of using this CLI with a Next.js project:
 
 [![Watch the video](https://img.youtube.com/vi/AlDYslqj3Do/default.jpg)](https://www.youtube.com/watch?v=AlDYslqj3Do)
+
+Demo of using this CLI with a React Router project:
+
+[https://github.com/nicnocquee/simple-i18n-next-demo-react-router](https://github.com/nicnocquee/simple-i18n-next-demo-react-router)
 
 ## How it works
 
 1. The CLI will search for all the JSON files in the `locales` directory.
-2. It will then create JavaScript functions for each translation key.
+2. It will then create TypeScript functions for each translation key.
 3. You use the generated functions in your components.
 
 ## How to use
