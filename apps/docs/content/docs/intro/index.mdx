@@ -2,32 +2,26 @@
 title: About
 ---
 
-DataQueue is an open source lightweight job queue for Node.js/TypeScript projects, backed by PostgreSQL. It lets you easily schedule, process, and manage background jobs. It's ideal for serverless environments like Vercel, AWS Lambda, and more.
+This is a CLI to generate TypeScript code from translation files in JSON format and Markdown files for TypeScript React projects. It's been tested with [Next.js](https://nextjs.org/) and [React Router](https://reactrouter.com/home) projects.
+
+## Why?
+
+Making your React TypeScript project support multiple languages should be simple. There shouldn't be too much setup involved. The existing solutions for internationalization (i18n) like react-i18next are slightly too complicated, e.g., you need to instantiate an instance, add middleware, add helpers for the server side and client side, etc.
+
+It should be as simple as providing a dictionary of translations and use it in your components. That's it.
 
 ## Features
 
-- Simple API for adding and processing jobs
-- Strong typing for job types and payloads, preventing you from adding jobs with the wrong payload and ensuring handlers receive the correct type
-- Works in serverless environments
-- Supports job priorities, scheduling, canceling, and retries
-- Reclaims stuck jobs: No job will remain in the `processing` state indefinitely
-- Cleans up old jobs: Keeps only jobs from the last xxx days
+- **Type-safe translation**. That means there will be build-time errors if you use a translation key that does not exist in a specific language.
+- **Build-time error when missing translations**. Translation keys must cover all languages. As a result, an error message will appear if a translation for a specific language is missing. E.g., if you have 2 languages, and in one of them you have a translation for the key `hello`, but in the other one you don't, an error message will appear.
+- **No JS code is sent to the client**. In React Server Components (RSC), the translations are generated inline during build time, so no JS code is sent to the client.
+- **Only necessary translations are sent**. When using the generated `useStrings` hook in client components to dynamically get localized strings, only the requested translation strings are downloaded. No useless data transfer!
+- **Markdown or MDX files are supported**. You can use Markdown or [MDX](https://mdxjs.com) files for each language.
+- **Pluralization support** with a simple syntax.
+- **Support for nested keys in the JSON files**.
+- **Support for multiple JSON files**.
 
-## Who is this for?
+## What this CLI is not or does not do
 
-This package is for you if all of the following apply:
-
-|     |                                                                                                |
-| --- | ---------------------------------------------------------------------------------------------- |
-| ☁️  | You deploy web apps to serverless platforms like Vercel, AWS Lambda, etc.                      |
-| 📝  | You use TypeScript                                                                             |
-| ⚡  | You want your app to stay fast and responsive by offloading heavy tasks to the background      |
-| 💾  | You use PostgreSQL as your database                                                            |
-| 🤷‍♂️  | You don't want to set up or maintain another queue system like Redis                           |
-| 💸  | You're on a budget and want to avoid paying for a job queue service or running your own server |
-
-## Why PostgreSQL?
-
-Many people use Redis for job queues, but adding another tool to your stack can increase costs and maintenance. If you already use PostgreSQL, it makes sense to use it for job queues, thanks to [SKIP LOCKED](https://www.postgresql.org/docs/current/sql-select.html).
-
-The update process in DataQueue uses `FOR UPDATE SKIP LOCKED` to avoid race conditions and improve performance. If two jobs are scheduled at the same time, one will skip any jobs that are already being processed and work on other available jobs instead. This lets multiple workers handle different jobs at once without waiting or causing conflicts, making PostgreSQL a great choice for job queues and similar tasks.
+- **It does not have language detection**. You need to pass the language code to the generated functions. You can easily get the language code from the URL pathname if you follow the [Internationalization documentation of Next.js](https://nextjs.org/docs/app/guides/internationalization#routing-overview).
+- **It does not support various localization sources.** You can only use JSON files and Markdown files.

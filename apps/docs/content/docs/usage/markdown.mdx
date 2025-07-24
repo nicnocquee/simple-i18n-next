@@ -1,0 +1,103 @@
+---
+title: Markdown/MDX
+---
+
+Let's say you have a `locales/en/index/section1.mdx` file that contains the following English content:
+
+```mdx title="locales/en/index/section1.mdx"
+# Section 1
+
+This is the first section.
+```
+
+And a `locales/de/index/section1.mdx` file that contains the following German content:
+
+```mdx title="locales/de/index/section1.mdx"
+# Sektion 1
+
+Dies ist die erste Sektion.
+```
+
+You can use the generated markdown component in your `page.tsx` file like this:
+
+```tsx title="app/[lang]/page.tsx"
+import { SupportedLanguage } from '@/locales/.generated/types';
+// [!code highlight:1]
+import { IndexSection1 } from 'locales/.generated/locales-markdown';
+
+export default function HomePage({
+  params: { lang },
+}: {
+  params: { lang: SupportedLanguage };
+}) {
+  return (
+    <div>
+      // [!code highlight:1]
+      <IndexSection1 lang={lang} />
+    </div>
+  );
+}
+```
+
+## Interpolation
+
+In the Markdown files, you can use interpolation by using the `{props.variable_name}` syntax. For example, if you have the following `locales/en/about.mdx` file:
+
+```mdx title="locales/en/about.mdx"
+# Section 1
+
+This is the first section. My name is {props.name}.
+```
+
+The CLI will generate the following prop types:
+
+```typescript
+type AboutProps = {
+  name: string;
+};
+```
+
+And when you use the generated component without passing the `name` prop, you will get a TypeScript error!
+
+```tsx title="app/[lang]/about.tsx"
+import { SupportedLanguage } from '@/locales/.generated/types';
+// [!code highlight:1]
+import { SupportedLanguage } from '@/locales/.generated/types';
+import { About } from 'locales/.generated/locales-markdown';
+
+export default function AboutPage({
+  params: { lang },
+}: {
+  params: { lang: SupportedLanguage };
+}) {
+  return (
+    <div>
+      // [!code highlight:1]
+      <About lang={lang} /> {/* TypeScript error! name prop is missing */}
+      // [!code highlight:1]
+      <About lang={lang} name="John" /> {/* No error! */}
+    </div>
+  );
+}
+```
+
+## Prerequisites
+
+Your project must be set up to use Markdown and MDX, i.e., the bundler you use must be able to convert the Markdown files to React components.
+
+### Next.js
+
+Please make sure that you have set up your Next.js project to use Markdown and
+MDX by following the [official
+documentation](https://nextjs.org/docs/app/building-your-application/configuring/mdx).
+
+### React Router
+
+For React Router, you need to install `@mdx-js/rollup` and `@mdx-js/react`,
+then [update the Vite config
+file](https://mdxjs.com/docs/getting-started/#vite). You can also check the
+[demo
+project](https://github.com/nicnocquee/simple-i18n-next-demo-react-router) for
+more details.
+
+Check out the example demo [here](https://simple-i18n-next-example.vercel.app/en/about-markdown) and the code in the [repository](<https://github.com/nicnocquee/simple-i18n-next-example/blob/main/app/(with-lang)/%5Blang%5D/about-markdown/%5BuserId%5D/page.tsx>).

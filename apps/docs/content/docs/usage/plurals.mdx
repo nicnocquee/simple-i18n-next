@@ -1,0 +1,182 @@
+---
+title: Plurals
+---
+
+This CLI also generates code for plurals for both [ordinal and cardinal numbers](https://en.wikipedia.org/wiki/Ordinal_numeral). Ordinal numbers are used for numbers that represent a position, while cardinal numbers are used for numbers that represent a quantity.
+
+## Suffixes
+
+You need to add one of the following suffixes to let the script know that you want to use plurals:
+
+| Type             | Suffix           | Description                               |
+| ---------------- | ---------------- | ----------------------------------------- |
+| Cardinal numbers | `_one`           | Used when count equals 1                  |
+| Cardinal numbers | `_two`           | Used when count equals 2                  |
+| Cardinal numbers | `_few`           | Used for small quantities (typically 3-4) |
+| Cardinal numbers | `_many`          | Used for larger quantities                |
+| Cardinal numbers | `_other`         | Used for most quantities (default case)   |
+| Cardinal numbers | `_zero`          | Used when count equals 0                  |
+| Ordinal numbers  | `_ordinal_one`   | Used for 1st position                     |
+| Ordinal numbers  | `_ordinal_two`   | Used for 2nd position                     |
+| Ordinal numbers  | `_ordinal_few`   | Used for 3rd position                     |
+| Ordinal numbers  | `_ordinal_many`  | Used for larger positions                 |
+| Ordinal numbers  | `_ordinal_other` | Used for most positions (default case)    |
+| Ordinal numbers  | `_ordinal_zero`  | Used for 0th position                     |
+
+You can read more about these plural rules from the [CLDR website](https://cldr.unicode.org/index/cldr-spec/plural-rules).
+
+## Example
+
+For example, you can create a `locales/en/messages.json` file that contains the following English content:
+
+```json title="locales/en/messages.json"
+{
+  "book_one": "One book",
+  "book_other": "{{count}} books",
+  "movie_ordinal_one": "1st movie",
+  "movie_ordinal_two": "2nd movie",
+  "movie_ordinal_few": "3rd movie",
+  "movie_ordinal_other": "{{count}}th movie"
+}
+```
+
+and a `locales/de/messages.json` file that contains the following German content:
+
+```json title="locales/de/messages.json"
+{
+  "book_one": "Ein Buch",
+  "book_other": "{{count}} Bücher",
+  "movie_ordinal_other": "{{count}}. Film"
+}
+```
+
+## Generated code
+
+After running the CLI, you will get `bookWithCount` and `movieWithOrdinalCount` functions in the `@/locales/.generated/strings` file.
+
+Then in the RSC component like `page.tsx`, you can use the generated function like this:
+
+```tsx title="page.tsx"
+import { SupportedLanguage } from '@/locales/.generated/types';
+import {
+  bookWithCount,
+  movieWithOrdinalCount,
+} from '@/locales/.generated/strings';
+export default function Home({
+  params: { lang },
+}: Readonly<{ params: { lang: SupportedLanguage } }>) {
+  return (
+    <main>
+      <div>
+        <p>{movieWithOrdinalCount(lang, 1)}</p>
+        <p>{movieWithOrdinalCount(lang, 2)}</p>
+        <p>{movieWithOrdinalCount(lang, 3)}</p>
+        <p>{movieWithOrdinalCount(lang, 4)}</p>
+        <p>{movieWithOrdinalCount(lang, 5)}</p>
+      </div>
+      <div>
+        <p>{bookWithCount(lang, 1)}</p>
+        <p>{bookWithCount(lang, 2)}</p>
+        <p>{bookWithCount(lang, 3)}</p>
+        <p>{bookWithCount(lang, 4)}</p>
+        <p>{bookWithCount(lang, 5)}</p>
+      </div>
+    </main>
+  );
+}
+```
+
+which will render the following HTML when the language is German (`de`):
+
+```html
+<main>
+  <div>
+    <p>1. Film</p>
+    <p>2. Film</p>
+    <p>3. Film</p>
+    <p>4. Film</p>
+    <p>5. Film</p>
+  </div>
+  <div>
+    <p>1 Buch</p>
+    <p>2 Bücher</p>
+    <p>3 Bücher</p>
+    <p>4 Bücher</p>
+    <p>5 Bücher</p>
+  </div>
+</main>
+```
+
+and when the language is English (`en`):
+
+```html
+<main>
+  <div>
+    <p>1st movie</p>
+    <p>2nd movie</p>
+    <p>3rd movie</p>
+    <p>4th movie</p>
+    <p>5th movie</p>
+  </div>
+  <div>
+    <p>One book</p>
+    <p>2 books</p>
+    <p>3 books</p>
+    <p>4 books</p>
+    <p>5 books</p>
+  </div>
+</main>
+```
+
+## Use in client components
+
+When using the `useStrings` hook in a client component, you can use the **second element** of the returned array to get the plural functions.
+
+```tsx title="client/page.tsx"
+'use client';
+
+import { useStrings } from '@/locales/.generated/client/hooks';
+
+export default function ClientComponent() {
+  const lang = useSelectedLanguageFromPathname();
+  // [!code highlight:1]
+  const [, plurals] = useStrings(
+    ['bookWithCount', 'movieWithOrdinalCount'],
+    lang,
+  );
+  if (!plurals) return null;
+  return (
+    <div>
+      <div>
+        <p>{plurals.bookWithCount(1)}</p>
+        <p>{plurals.bookWithCount(2)}</p>
+        <p>{plurals.bookWithCount(3)}</p>
+        <p>{plurals.bookWithCount(4)}</p>
+        <p>{plurals.bookWithCount(5)}</p>
+      </div>
+
+      <div>
+        <p>{plurals.movieWithOrdinalCount(1)}</p>
+        <p>{plurals.movieWithOrdinalCount(2)}</p>
+        <p>{plurals.movieWithOrdinalCount(3)}</p>
+        <p>{plurals.movieWithOrdinalCount(4)}</p>
+        <p>{plurals.movieWithOrdinalCount(5)}</p>
+      </div>
+    </div>
+  );
+}
+```
+
+## Plural rules
+
+**Note that the plural rules for cardinal and ordinal numbers for a given language can be different.** For example, in English, the plural rule for cardinal numbers is `one` and `other`, while the plural rule for ordinal numbers is `one`, `two`, `few`, and `other`. On the other hand, in German, the plural rule for cardinal numbers is `one` and `other`, while the plural rule for ordinal numbers is _only_ `other`. The CLI will warn you if you miss some plural rules.
+
+You can find out the plural rules for a given language by executing the following statement in the Node.js REPL or browser console:
+
+```javascript
+// plural rules for ordinal numbers in German
+new Intl.PluralRules('de', { type: 'ordinal' }).resolvedOptions()
+  .pluralCategories;
+// plural rules for cardinal numbers in German
+new Intl.PluralRules('de').resolvedOptions().pluralCategories;
+```

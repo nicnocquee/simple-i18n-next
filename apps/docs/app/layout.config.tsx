@@ -13,13 +13,13 @@ export const baseOptions: BaseLayoutProps = {
     title: (
       <>
         <Image
-          src="/dataqueue-logo.png"
-          alt="DataQueue"
+          src="/simple-i18n-next-logo.png"
+          alt="Simple i18n Next"
           width={24}
           height={24}
           className="mr-2"
         />
-        DataQueue
+        Simple i18n Next
       </>
     ),
   },

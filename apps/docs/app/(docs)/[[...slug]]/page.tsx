@@ -46,7 +46,7 @@ export async function generateMetadata(props: {
   if (!page) notFound();
 
   return {
-    title: `${page.data.title} - DataQueue`,
+    title: `${page.data.title} - Simple i18n Next`,
     description: page.data.description,
   };
 }

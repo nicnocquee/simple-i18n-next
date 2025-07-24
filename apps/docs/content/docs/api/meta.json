@@ -1,14 +1,9 @@
 {
   "title": "API",
   "pages": [
-    "job-queue",
-    "job-options",
-    "job-record",
-    "job-event",
-    "processor",
-    "job-handlers",
-    "db-util",
-    "failure-reason",
-    "tags"
+    "supported-languages",
+    "default-language",
+    "use-strings",
+    "camel-case"
   ]
 }
