@@ -9,9 +9,9 @@ Making your Next.js project support multiple languages should be simple. There s
 ## Features
 
 - **Type-safe translation**. That means there will be build-time errors if you use a translation key that does not exist in a specific language.
-- **Build-time error when missing translations**. Translation keys must cover all languages. As a result, an error message will appear if a translation for a specific language is missing.
+- **Build-time error when missing translations**. Translation keys must cover all languages. As a result, an error message will appear if a translation for a specific language is missing. E.g., if you have 2 languages, and in one of them you have a translation for the key `hello`, but in the other one you don't, an error message will appear.
 - **No JS code is sent to the client**. In React Server Components (RSC), the translations are generated inline during build time, so no JS code is sent to the client.
-- **Only necessary translations are sent**. When using the generated `useStrings` hook in client components to dynamically get localized strings, only the requested translation strings are downloaded.
+- **Only necessary translations are sent**. When using the generated `useStrings` hook in client components to dynamically get localized strings, only the requested translation strings are downloaded. No useless data transfer!
 - **Markdown or MDX files are supported**. You can use Markdown or [MDX](https://mdxjs.com) files for each language.
 - **Pluralization support** with a simple syntax.
 - **Support for nested keys in the JSON files**.
@@ -68,9 +68,7 @@ You can also check out the sample React Router project that uses this CLI [in th
 2. It will then create TypeScript functions for each translation key.
 3. You use the generated functions in your components.
 
-## How to use
-
-To get started:
+## How to use the CLI
 
 1. Create a `locales` directory in your Next.js or React Router project. This directory will contain the translation files in JSON format and Markdown files.
 2. For each language you want to support, create a new directory in the `locales` directory. The name of the directory must be one of the [valid language codes](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). For example, if you want to support English, French, and Italian, you will create the following directories: `en`, `fr`, and `it`.
@@ -192,6 +190,18 @@ export const hello = (lang: SupportedLanguage) => {
 }
 ```
 
+Which you can import in your components like this:
+
+```tsx
+import { SupportedLanguage } from '@/locales/.generated/types' // adjust the path to the generated directory
+import { hello } from '@/locales/.generated/strings'
+
+export default async function HomePage({ params }: Promise<{ lang: SupportedLanguage }>) {
+  const { lang } = await params
+  return <div>{hello(lang)}</div>
+}
+```
+
 When the keys are from other JSON files, the file name is prefixed to the key. For example, if you have the following `locales/en/client.json` file:
 
 ```json
@@ -205,6 +215,18 @@ it will be converted to the following TypeScript code:
 ```typescript
 export const clientHello = (lang: SupportedLanguage) => {
   // content
+}
+```
+
+Which you can import in your components like this:
+
+```tsx
+import { SupportedLanguage } from '@/locales/.generated/types' // adjust the path to the generated directory
+import { clientHello } from '@/locales/.generated/strings'
+
+export default async function HomePage({ params }: Promise<{ lang: SupportedLanguage }>) {
+  const { lang } = await params
+  return <div>{clientHello(lang)}</div>
 }
 ```
 
@@ -230,17 +252,23 @@ export default function HomePage({ params: { lang } }: { params: { lang: Support
 }
 ```
 
+which will render the following HTML:
+
+```html
+<div>Hello, Nico!</div>
+```
+
 The generated function is fully typed so you have to pass the correct variable name to the function as shown above.
 
-In a client component, you can use the interpolated variables with the `interpolateTemplate` function.
+When you use the `useStrings` hook in a client component to dynamically get the translations, you can use the `stringsWithArgs` object to get the translations functions.
 
 ```tsx
 'use client'
-import { interpolateTemplate } from '@/locales/.generated/common'
+import { useStrings } from '@/locales/.generated/client/hooks'
 
 export default function ClientComponent() {
   // stringsWithArgs is the third element in the array
-  const [strings, , stringsWithArgs] = useStrings(['bye', 'home'])
+  const [strings, , stringsWithArgs] = useStrings(['bye', 'home']) // the keys are typed!
   if (!stringsWithArgs) return null
   return (
     <div className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -249,6 +277,15 @@ export default function ClientComponent() {
     </div>
   )
 }
+```
+
+which will render the following HTML:
+
+```html
+<div>
+  <h1>Bye, John!</h1>
+  <a href="/">Home</a>
+</div>
 ```
 
 ### In React Server Components (RSC)
@@ -264,49 +301,9 @@ export default function HomePage({ params: { lang } }: { params: { lang: Support
 }
 ```
 
-### In Client Components
+### Dynamic translations in client components
 
-There are two ways to use the translations in your client components.
-
-1. Pass the required translations [from the server component to the client component as props](https://nextjs.org/docs/app/building-your-application/rendering/composition-patterns#passing-props-from-server-to-client-components-serialization). This is the recommended way.
-
-```tsx
-// app/[lang]/comingsoon/coming-soon.tsx
-'use client'
-
-import { StringKeys, SupportedLanguage } from '@/locales/.generated/types'
-
-export function ComingSoon({
-  strings,
-}: {
-  strings: Pick<Record<StringKeys, string>, 'comingSoon' | 'hello'>
-}) {
-  return (
-    <div>
-      <h1>{strings.comingSoon}</h1>
-      <p>{strings.hello}</p>
-    </div>
-  )
-}
-
-// app/[lang]/comingsoon/page.tsx
-export default function ComingSoonPage({
-  params: { lang },
-}: {
-  params: { lang: SupportedLanguage }
-}) {
-  return (
-    <ComingSoon
-      strings={{
-        comingSoon: comingSoon(lang),
-        hello: hello(lang),
-      }}
-    />
-  )
-}
-```
-
-2. Or, you can also use the generated `useStrings` hook to get the translations in the client component.
+The generated code by this CLI can be used in both the server component and client component. But if for some reasons you want to dynamically get the translations in the client component, you can use the `useStrings` hook. This hook is a custom React hook that you can import from the `@/locales/.generated/client/hooks` directory.
 
 ```tsx
 'use client'
@@ -681,7 +678,7 @@ export const catWithOrdinalCount = (count: number) => {
 
 ### useStrings
 
-`useStrings` is a custom React hook, so you can only use it in a client component.
+`useStrings` is a custom React hook to dynamically get the translations in a client component. **Note that you almost never need to use this hook.** You should use the generated functions in your components directly instead.
 
 Parameters:
 
