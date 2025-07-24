@@ -5,7 +5,7 @@ import {
   type StringKeys,
   type ArgsProps,
 } from "../types";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 type Identity<T> = T extends object ? { [K in keyof T]: T[K] } : T;
 type StringKeysWithoutCount<T> = Exclude<
@@ -18,6 +18,13 @@ type StringKeysWithCount<T> = Extract<
 >;
 type WithCountFunc = (count: number) => string;
 type WithArgsFunc = (args: ArgsProps) => string;
+
+/**
+ * Custom hook to get strings, plurals and strings with args from the locale files.
+ * @param keys - The keys to get from the locale files.
+ * @param lang - The language to get the strings from.
+ * @returns [strings, plurals, stringsWithArgs]
+ */
 export const useStrings = <T extends StringKeys>(
   keys: T[],
   lang: SupportedLanguage = defaultLanguage
@@ -39,9 +46,6 @@ export const useStrings = <T extends StringKeys>(
     WithCountFunc
   > | null>(null);
 
-  const memoizedKeys = useMemo(() => keys, [...keys]);
-  const memoizedLang = useMemo(() => lang, [lang]);
-
   useEffect(() => {
     let isCleanedup = false;
     const controller = new AbortController();
@@ -50,8 +54,8 @@ export const useStrings = <T extends StringKeys>(
     async function loadLocale() {
       try {
         const data = await Promise.all(
-          memoizedKeys.map(async (key) => {
-            const importedModule = await import(`./${memoizedLang}/${key}.tsx`);
+          keys.map(async (key) => {
+            const importedModule = await import(`./${lang}/${key}.tsx`);
             if (signal.aborted && !isCleanedup) return null;
             return {
               key,
@@ -136,7 +140,10 @@ export const useStrings = <T extends StringKeys>(
       isCleanedup = true;
       controller.abort();
     };
-  }, [memoizedLang, memoizedKeys]);
+  }, [lang, keys]);
 
-  return [strings, plurals, stringsWithArgs] as const;
+  return useMemo(
+    () => [strings, plurals, stringsWithArgs] as const,
+    [strings, plurals, stringsWithArgs]
+  );
 };
