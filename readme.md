@@ -4,7 +4,7 @@ This is a CLI to generate TypeScript code from translation files in JSON format 
 
 ## Why?
 
-Making your Next.js project support multiple languages should be simple. There shouldn't be too much setup involved. The existing solutions for internationalization (i18n) like react-i18next are too complicated for my taste, e.g., you need to instantiate an instance, add middleware, etc. I just want to have a dictionary of translations and use it in my components. That's it. If you're like me, this CLI is for you too.
+Making your Next.js project support multiple languages should be simple. There shouldn't be too much setup involved. The existing solutions for internationalization (i18n) like react-i18next are too complicated for my taste, e.g., you need to instantiate an instance, add middleware, add helpers for the server side and client side, etc. _I just want to provide a dictionary of translations and use it in my components_. That's it. If you're like me, this CLI is for you too.
 
 ## Features
 
