@@ -343,7 +343,7 @@ export function generateLocale({
       )
 
       langFunctions[genericFunctionName] ||= {}
-      ;(langFunctions[genericFunctionName] as Record<string, string>)[lang] = functionName
+      langFunctions[genericFunctionName][lang] = functionName
     })
 
     const pluralKeysForLang = pluralLang.getPluralKeys()

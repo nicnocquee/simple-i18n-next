@@ -1,0 +1,6 @@
+{
+  "title": "simple-i18n-next",
+  "icon": "MyIcon",
+  "pages": ["intro", "usage", "example", "api"],
+  "defaultOpen": true
+}

@@ -1,0 +1,23 @@
+---
+title: Overview
+---
+
+This is basically what the CLI does:
+
+1. The CLI will search for all the JSON files in the `locales` directory.
+2. It will then create TypeScript functions for each translation key.
+3. You use the generated functions in your components.
+
+## Example Directory Structure
+
+```text
+locales/
+  en/
+    messages.json
+    about.mdx
+    client.json
+  de/
+    messages.json
+    about.mdx
+    client.json
+```

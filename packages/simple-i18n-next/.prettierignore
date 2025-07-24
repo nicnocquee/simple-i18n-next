@@ -1,0 +1,4 @@
+dist
+__tests__/locales/expected-generated-dir
+test/locales*
+mdx.d.ts
