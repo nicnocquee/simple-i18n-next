@@ -303,7 +303,7 @@ export default function HomePage({ params: { lang } }: { params: { lang: Support
 
 ### Dynamic translations in client components
 
-The generated code by this CLI can be used in both the server component and client component. But if for some reasons you want to dynamically get the translations in the client component, you can use the `useStrings` hook. This hook is a custom React hook that you can import from the `@/locales/.generated/client/hooks` directory.
+The generated code by this CLI can be used in both the server component and client component. But if for some reasons you want to dynamically get the translations in the client component, you can use the `useStrings` hook. This hook is a custom React hook that you can import from the `@/locales/.generated/client/hooks`.
 
 ```tsx
 'use client'
@@ -323,7 +323,7 @@ export default function HomePage() {
 }
 ```
 
-### The Markdown MDX files
+### Markdown/MDX
 
 Let's say you have a `locales/en/index/section1.mdx` file that contains the following English content:
 
@@ -516,7 +516,7 @@ and when the language is English (`en`):
 </main>
 ```
 
-In a client component, you can use the generated plural functions like this:
+When using the `useStrings` hook in a client component, you can use the **second element** of the returned array to get the plural functions.
 
 ```tsx:client/page.tsx
 "use client";
@@ -555,7 +555,7 @@ export default function ClientComponent() {
 }
 ```
 
-Note that the plural rules for cardinal and ordinal numbers for a given language can be different. For example, in English, the plural rule for cardinal numbers is `one` and `other`, while the plural rule for ordinal numbers is `one`, `two`, `few`, and `other`. On the other hand, in German, the plural rule for cardinal numbers is `one` and `other`, while the plural rule for ordinal numbers is _only_ `other`.
+**Note that the plural rules for cardinal and ordinal numbers for a given language can be different.** For example, in English, the plural rule for cardinal numbers is `one` and `other`, while the plural rule for ordinal numbers is `one`, `two`, `few`, and `other`. On the other hand, in German, the plural rule for cardinal numbers is `one` and `other`, while the plural rule for ordinal numbers is _only_ `other`. The CLI will warn you if you miss some plural rules.
 
 You can find out the plural rules for a given language by executing the following statement in the Node.js REPL or browser console:
 
