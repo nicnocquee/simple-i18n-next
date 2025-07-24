@@ -46,6 +46,10 @@ export const useStrings = <T extends StringKeys>(
     WithCountFunc
   > | null>(null);
 
+  const keysString = JSON.stringify(keys);
+  const memoizedKeys = useMemo(() => keysString, [keysString]);
+  const memoizedLang = useMemo(() => lang, [lang]);
+
   useEffect(() => {
     let isCleanedup = false;
     const controller = new AbortController();
@@ -54,8 +58,8 @@ export const useStrings = <T extends StringKeys>(
     async function loadLocale() {
       try {
         const data = await Promise.all(
-          keys.map(async (key) => {
-            const importedModule = await import(`./${lang}/${key}.tsx`);
+          JSON.parse(memoizedKeys).map(async (key: string) => {
+            const importedModule = await import(`./${memoizedLang}/${key}.tsx`);
             if (signal.aborted && !isCleanedup) return null;
             return {
               key,
@@ -140,7 +144,7 @@ export const useStrings = <T extends StringKeys>(
       isCleanedup = true;
       controller.abort();
     };
-  }, [lang, keys]);
+  }, [memoizedLang, memoizedKeys]);
 
   return useMemo(
     () => [strings, plurals, stringsWithArgs] as const,
