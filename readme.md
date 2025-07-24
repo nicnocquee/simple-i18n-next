@@ -4,7 +4,7 @@ This is a CLI to generate TypeScript code from translation files in JSON format 
 
 ## Why?
 
-Making your Next.js project support multiple languages should be simple. There shouldn't be too much setup involved. The existing solutions for internationalization (i18n) like react-18next are too complicated for my taste, e.g., you need to instantiate an instance, add middleware, etc. I just want to have a dictionary of translations and use it in my components. That's it. If you're like me, this CLI is for you too.
+Making your Next.js project support multiple languages should be simple. There shouldn't be too much setup involved. The existing solutions for internationalization (i18n) like react-i18next are too complicated for my taste, e.g., you need to instantiate an instance, add middleware, etc. I just want to have a dictionary of translations and use it in my components. That's it. If you're like me, this CLI is for you too.
 
 ## Features
 
@@ -32,7 +32,7 @@ npm i -g simple-i18n-next
 
 Or you can run the command directly:
 
-```shell
+```bash
 npx simple-i18n-next -i ./locales
 ```
 
@@ -58,9 +58,9 @@ Video demo of using this CLI with a Next.js project:
 
 [![Watch the video](https://img.youtube.com/vi/AlDYslqj3Do/default.jpg)](https://www.youtube.com/watch?v=AlDYslqj3Do)
 
-Demo of using this CLI with a React Router project:
+You can check out the sample Next.js project that uses this CLI [in this repository](https://github.com/nicnocquee/simple-i18n-next-example).
 
-[https://github.com/nicnocquee/simple-i18n-next-demo-react-router](https://github.com/nicnocquee/simple-i18n-next-demo-react-router)
+You can also check out the sample React Router project that uses this CLI [in this repository](https://github.com/nicnocquee/simple-i18n-next-demo-react-router).
 
 ## How it works
 
@@ -299,7 +299,7 @@ export default function ComingSoonPage({
     <ComingSoon
       strings={{
         comingSoon: comingSoon(lang),
-        hello: submitMessage(lang),
+        hello: hello(lang),
       }}
     />
   )
@@ -378,7 +378,7 @@ type AboutProps = {
 }
 ```
 
-And when you use the generated component without passing the `name` prop, you will get TypeScript error!
+And when you use the generated component without passing the `name` prop, you will get a TypeScript error!
 
 ```tsx
 // app/[lang]/about.tsx
@@ -399,7 +399,7 @@ Please make sure that you have set up your Next.js project to use Markdown and M
 
 Check out the example demo [here](https://simple-i18n-next-example.vercel.app/en/about-markdown) and the code in the [repository](<https://github.com/nicnocquee/simple-i18n-next-example/blob/main/app/(with-lang)/%5Blang%5D/about-markdown/%5BuserId%5D/page.tsx>).
 
-For React Router, you need to install `@mdx-js/rollup` and `@mdx-js/react`, then [update the vite config file](https://mdxjs.com/docs/getting-started/#vite). You can also check the [demo project](https://github.com/nicnocquee/simple-i18n-next-demo-react-router) for more details.
+For React Router, you need to install `@mdx-js/rollup` and `@mdx-js/react`, then [update the Vite config file](https://mdxjs.com/docs/getting-started/#vite). You can also check the [demo project](https://github.com/nicnocquee/simple-i18n-next-demo-react-router) for more details.
 
 ### Plurals
 
@@ -612,15 +612,11 @@ export default function HomePage({ params: { lang } }: { params: { lang: Support
 }
 ```
 
-## Example
-
-You can checkout the sample Next.js project that uses this CLI [in this repository](https://github.com/nicnocquee/simple-i18n-next-example).
-
 ## API
 
 ### Generated constants and functions
 
-The generated constants and functions are using **camelCase** convention. For example, if you have the followng `locales/en/messages.json` file:
+The generated constants and functions use **camelCase** convention. For example, if you have the following `locales/en/messages.json` file:
 
 ```json
 {
@@ -685,7 +681,7 @@ export const catWithOrdinalCount = (count: number) => {
 
 ### useStrings
 
-`useStrings` is a custom React hook so you can only use it in a client component.
+`useStrings` is a custom React hook, so you can only use it in a client component.
 
 Parameters:
 
@@ -694,9 +690,9 @@ Parameters:
 
 Returns an array of exactly 3 elements:
 
-1. `strings`: An array of translated strings, excluding the plural keys and the keys with arguments.
-2. `plurals`: An array of functions that can be used to translate the plural keys.
-3. `stringsWithArgs`: An array of functions that can be used to translate the keys with arguments.
+1. `strings`: An object of translated strings, excluding the plural keys and the keys with arguments.
+2. `plurals`: An object of functions that can be used to translate the plural keys.
+3. `stringsWithArgs`: An object of functions that can be used to translate the keys with arguments.
 
 Example:
 
@@ -762,11 +758,11 @@ export default function ClientComponent() {
   )
 ```
 
-In the example above, since the `greeting` key has arguments, it is only available in the `stringsWithArgs` array as a function that receives the arguments.
+In the example above, since the `greeting` key has arguments, it is only available in the `stringsWithArgs` object as a function that receives the arguments.
 
 ### supportedLanguages
 
-You can use the `supportedLanguages` array to get the supported languages in your application. For example
+You can use the `supportedLanguages` array to get the supported languages in your application. For example:
 
 ```tsx
 import { supportedLanguages } from '@/locales/.generated/types'
@@ -788,7 +784,7 @@ export default function LanguageSelector() {
 
 ### defaultLanguage
 
-You can use the `defaultLanguage` string to get the default language in your application. For example
+You can use the `defaultLanguage` string to get the default language in your application. For example:
 
 ```tsx
 import { defaultLanguage } from '@/locales/.generated/types'
