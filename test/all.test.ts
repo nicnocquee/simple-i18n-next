@@ -7,7 +7,7 @@
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import crypto from 'node:crypto'
-import test from 'ava'
+import { it, beforeAll, afterAll, expect } from 'vitest'
 import { glob } from 'glob'
 import { generateLocale, Plurals } from '../source/generate-locale.js'
 
@@ -15,25 +15,34 @@ const getDirectories = async (pattern: string) => {
   return glob(pattern)
 }
 
-test.before(async () => {
+beforeAll(async () => {
   try {
     const files = await getDirectories('./test/**/.generated*')
-    await Promise.allSettled(files.map(async (file) => fs.rm(file, { recursive: true })))
+    await Promise.allSettled(
+      files
+        // Exclude the generated files for the useStrings hook test
+        .filter((file) => !file.includes('locales-with-plurals-vitest/.generated-vitest'))
+        .map(async (file) => fs.rm(file, { recursive: true }))
+    )
   } catch (error) {
     console.log(error)
   }
 })
 
-test.after(async () => {
+afterAll(async () => {
   try {
     const files = await getDirectories('./test/**/.generated*')
-    await Promise.allSettled(files.map(async (file) => fs.rm(file, { recursive: true })))
+    await Promise.allSettled(
+      files
+        .filter((file) => !file.includes('locales-with-plurals-vitest/.generated-vitest'))
+        .map(async (file) => fs.rm(file, { recursive: true }))
+    )
   } catch (error) {
     console.log(error)
   }
 })
 
-test('generateLocale without output directory', async (t) => {
+it('generateLocale without output directory', async () => {
   generateLocale({
     localesDir: path.resolve(process.cwd(), './test/locales'),
     defaultLanguage: 'en',
@@ -43,10 +52,10 @@ test('generateLocale without output directory', async (t) => {
     './test/locales/.generated',
     './test/locales/.expected-generated-dir'
   )
-  t.true(identical)
+  expect(identical).toBe(true)
 })
 
-test('generateLocale with output directory', async (t) => {
+it('generateLocale with output directory', async () => {
   generateLocale({
     localesDir: path.resolve(process.cwd(), './test/locales'),
     defaultLanguage: 'en',
@@ -57,22 +66,22 @@ test('generateLocale with output directory', async (t) => {
     './test/locales/.generated2',
     './test/locales/.expected-generated-dir'
   )
-  t.true(identical)
+  expect(identical).toBe(true)
 })
 
-test("generateLocale with defaultLanguage but doesn't exist in localesDir", (t) => {
-  const error = t.throws(() => {
+it("generateLocale with defaultLanguage but doesn't exist in localesDir", () => {
+  const error = expect(() => {
     generateLocale({
       localesDir: path.resolve(process.cwd(), './test/locales-invalid-dir'),
       defaultLanguage: 'de',
       outputDir: './test/locales-invalid-dir/.generated2',
       silent: true,
     })
-  })
-  t.truthy(error)
+  }).toThrow()
+  expect(error).toBeTruthy()
 })
 
-test('generateLocale with invalid language code directory', async (t) => {
+it('generateLocale with invalid language code directory', async () => {
   generateLocale({
     localesDir: path.resolve(process.cwd(), './test/locales-invalid-dir'),
     defaultLanguage: 'en',
@@ -83,10 +92,10 @@ test('generateLocale with invalid language code directory', async (t) => {
     './test/locales-invalid-dir/.generated3',
     './test/locales-invalid-dir/.expected-generated-dir'
   )
-  t.true(identical)
+  expect(identical).toBe(true)
 })
 
-test('generateLocale with nested keys', async (t) => {
+it('generateLocale with nested keys', async () => {
   generateLocale({
     localesDir: path.resolve(process.cwd(), './test/locales-with-nested-keys'),
     defaultLanguage: 'en',
@@ -97,10 +106,10 @@ test('generateLocale with nested keys', async (t) => {
     './test/locales-with-nested-keys/.generated3',
     './test/locales-with-nested-keys/.expected-generated-dir'
   )
-  t.true(identical)
+  expect(identical).toBe(true)
 })
 
-test('generateLocale with plurals', async (t) => {
+it('generateLocale with plurals', async () => {
   generateLocale({
     localesDir: path.resolve(process.cwd(), './test/locales-with-plurals'),
     defaultLanguage: 'en',
@@ -111,10 +120,10 @@ test('generateLocale with plurals', async (t) => {
     './test/locales-with-plurals/.generated3',
     './test/locales-with-plurals/.expected-generated-dir'
   )
-  t.true(identical)
+  expect(identical).toBe(true)
 })
 
-test('generateLocale from multiple json files', async (t) => {
+it('generateLocale from multiple json files', async () => {
   generateLocale({
     localesDir: path.resolve(process.cwd(), './test/locales-with-many-jsons'),
     defaultLanguage: 'en',
@@ -125,10 +134,10 @@ test('generateLocale from multiple json files', async (t) => {
     './test/locales-with-many-jsons/.generated',
     './test/locales-with-many-jsons/.expected-generated-dir'
   )
-  t.true(identical)
+  expect(identical).toBe(true)
 })
 
-test('getPluralKeys no missing', (t) => {
+it('getPluralKeys no missing', () => {
   const plurals = new Plurals('en')
 
   plurals.storePluralKeyIfNeeded('hello', 'hello')
@@ -139,7 +148,7 @@ test('getPluralKeys no missing', (t) => {
 
   const { pluralKeys, incompletePluralKeys } = plurals.getPluralKeys()
 
-  t.true(
+  expect(
     objectsEqualIgnoringOrder(pluralKeys, {
       item: [
         ['other', 'item'],
@@ -150,11 +159,11 @@ test('getPluralKeys no missing', (t) => {
         ['one', 'cat'],
       ],
     })
-  )
-  t.deepEqual(incompletePluralKeys, {})
+  ).toBe(true)
+  expect(incompletePluralKeys).toEqual({})
 })
 
-test('getPluralKeys with missing english', (t) => {
+it('getPluralKeys with missing english', () => {
   const plurals = new Plurals('en')
 
   plurals.storePluralKeyIfNeeded('hello', 'hello')
@@ -163,7 +172,7 @@ test('getPluralKeys with missing english', (t) => {
   plurals.storePluralKeyIfNeeded('cat_one', 'cat')
 
   const { pluralKeys, incompletePluralKeys } = plurals.getPluralKeys()
-  t.true(
+  expect(
     objectsEqualIgnoringOrder(pluralKeys, {
       item: [
         ['other', 'item'],
@@ -171,15 +180,15 @@ test('getPluralKeys with missing english', (t) => {
       ],
       cat: [['one', 'cat']],
     })
-  )
-  t.true(
+  ).toBe(true)
+  expect(
     objectsEqualIgnoringOrder(incompletePluralKeys, {
       cat: ['other'],
     })
-  )
+  ).toBe(true)
 })
 
-test('getPluralKeys with missing arabic', (t) => {
+it('getPluralKeys with missing arabic', () => {
   const plurals = new Plurals('ar')
 
   plurals.storePluralKeyIfNeeded('hello', 'hello')
@@ -189,7 +198,7 @@ test('getPluralKeys with missing arabic', (t) => {
 
   const { pluralKeys, incompletePluralKeys } = plurals.getPluralKeys()
 
-  t.true(
+  expect(
     objectsEqualIgnoringOrder(pluralKeys, {
       item: [
         ['other', 'item'],
@@ -197,16 +206,16 @@ test('getPluralKeys with missing arabic', (t) => {
       ],
       cat: [['one', 'cat']],
     })
-  )
-  t.true(
+  ).toBe(true)
+  expect(
     objectsEqualIgnoringOrder(incompletePluralKeys, {
       item: ['few', 'many', 'two', 'zero'],
       cat: ['few', 'many', 'two', 'zero', 'other'],
     })
-  )
+  ).toBe(true)
 })
 
-test('getPluralKeys with unnecessary categories english', (t) => {
+it('getPluralKeys with unnecessary categories english', () => {
   const plurals = new Plurals('en')
 
   plurals.storePluralKeyIfNeeded('hello', 'hello')
@@ -218,7 +227,7 @@ test('getPluralKeys with unnecessary categories english', (t) => {
 
   const { pluralKeys, unnecessaryPluralKeys } = plurals.getPluralKeys()
 
-  t.true(
+  expect(
     objectsEqualIgnoringOrder(pluralKeys, {
       item: [
         ['other', 'item'],
@@ -229,12 +238,12 @@ test('getPluralKeys with unnecessary categories english', (t) => {
         ['other', 'cat'],
       ],
     })
-  )
+  ).toBe(true)
 
-  t.true(arraysEqualIgnoringOrder(unnecessaryPluralKeys, ['cat_few']))
+  expect(arraysEqualIgnoringOrder(unnecessaryPluralKeys, ['cat_few'])).toBe(true)
 })
 
-test('getPluralKeys with ordinal english', (t) => {
+it('getPluralKeys with ordinal english', () => {
   const plurals = new Plurals('en')
 
   plurals.storePluralKeyIfNeeded('hello', 'hello')
@@ -244,26 +253,26 @@ test('getPluralKeys with ordinal english', (t) => {
   plurals.storePluralKeyIfNeeded('cat_ordinal_other', 'cat')
 
   const { pluralKeys, pluralOrdinalKeys } = plurals.getPluralKeys()
-  t.true(
+  expect(
     objectsEqualIgnoringOrder(pluralKeys, {
       item: [
         ['other', 'item'],
         ['one', 'item'],
       ],
     })
-  )
+  ).toBe(true)
 
-  t.true(
+  expect(
     objectsEqualIgnoringOrder(pluralOrdinalKeys, {
       cat: [
         ['other', 'cat'],
         ['one', 'cat'],
       ],
     })
-  )
+  ).toBe(true)
 })
 
-test('getPluralKeys with ordinal missing english', (t) => {
+it('getPluralKeys with ordinal missing english', () => {
   const plurals = new Plurals('en')
 
   plurals.storePluralKeyIfNeeded('hello', 'hello')
@@ -272,29 +281,29 @@ test('getPluralKeys with ordinal missing english', (t) => {
   plurals.storePluralKeyIfNeeded('cat_ordinal_one', 'cat')
 
   const { pluralKeys, pluralOrdinalKeys, incompletePluralOrdinalKeys } = plurals.getPluralKeys()
-  t.true(
+  expect(
     objectsEqualIgnoringOrder(pluralKeys, {
       item: [
         ['other', 'item'],
         ['one', 'item'],
       ],
     })
-  )
+  ).toBe(true)
 
-  t.true(
+  expect(
     objectsEqualIgnoringOrder(pluralOrdinalKeys, {
       cat: [['one', 'cat']],
     })
-  )
+  ).toBe(true)
 
-  t.true(
+  expect(
     objectsEqualIgnoringOrder(incompletePluralOrdinalKeys, {
       cat: ['few', 'two', 'other'],
     })
-  )
+  ).toBe(true)
 })
 
-test('getPluralKeys with ordinal unnecessary english', (t) => {
+it('getPluralKeys with ordinal unnecessary english', () => {
   const plurals = new Plurals('en')
 
   plurals.storePluralKeyIfNeeded('hello', 'hello')
@@ -309,31 +318,31 @@ test('getPluralKeys with ordinal unnecessary english', (t) => {
     incompletePluralOrdinalKeys,
     unnecessaryPluralOrdinalKeys,
   } = plurals.getPluralKeys()
-  t.true(
+  expect(
     objectsEqualIgnoringOrder(pluralKeys, {
       item: [
         ['other', 'item'],
         ['one', 'item'],
       ],
     })
-  )
+  ).toBe(true)
 
-  t.true(
+  expect(
     objectsEqualIgnoringOrder(pluralOrdinalKeys, {
       cat: [['one', 'cat']],
     })
-  )
+  ).toBe(true)
 
-  t.true(
+  expect(
     objectsEqualIgnoringOrder(incompletePluralOrdinalKeys, {
       cat: ['few', 'two', 'other'],
     })
-  )
+  ).toBe(true)
 
-  t.true(arraysEqualIgnoringOrder(unnecessaryPluralOrdinalKeys, ['cat_ordinal_many']))
+  expect(arraysEqualIgnoringOrder(unnecessaryPluralOrdinalKeys, ['cat_ordinal_many'])).toBe(true)
 })
 
-test('interpolation', (t) => {
+it('interpolation', () => {
   generateLocale({
     localesDir: path.resolve(process.cwd(), './test/locales'),
     defaultLanguage: 'en',
@@ -344,10 +353,10 @@ test('interpolation', (t) => {
   const jiti = require('jiti')(__filename)
   const { greeting } = jiti('./locales/.generated3/server')
 
-  t.is(greeting('en', { name: 'Nico' }), 'Hello Nico!')
+  expect(greeting('en', { name: 'Nico' })).toBe('Hello Nico!')
 })
 
-test('interpolation with multiple variables', (t) => {
+it('interpolation with multiple variables', () => {
   generateLocale({
     localesDir: path.resolve(process.cwd(), './test/locales'),
     defaultLanguage: 'en',
@@ -358,34 +367,33 @@ test('interpolation with multiple variables', (t) => {
   const jiti = require('jiti')(__filename)
   const { welcome } = jiti('./locales/.generated4/server')
 
-  t.is(
-    welcome('en', { country: 'Switzerland', time: '4AM' }),
+  expect(welcome('en', { country: 'Switzerland', time: '4AM' })).toBe(
     "Welcome to Switzerland! It's 4AM now."
   )
 })
 
-test('case insensitive key', (t) => {
-  const error = t.throws(() => {
+it('case insensitive key', () => {
+  const error = expect(() => {
     generateLocale({
       localesDir: path.resolve(process.cwd(), './test/locales-with-case-insensitive-key'),
       defaultLanguage: 'en',
       outputDir: './test/locales-with-case-insensitive-key/.generated',
       silent: true,
     })
-  })
-  t.truthy(error)
+  }).toThrow()
+  expect(error).toBeTruthy()
 })
 
-test('reserved keyword', (t) => {
-  const error = t.throws(() => {
+it('reserved keyword', () => {
+  const error = expect(() => {
     generateLocale({
       localesDir: path.resolve(process.cwd(), './test/locales-with-reserved-keywords'),
       defaultLanguage: 'en',
       outputDir: './test/locales-with-reserved-keywords/.generated',
       silent: true,
     })
-  })
-  t.truthy(error)
+  }).toThrow()
+  expect(error).toBeTruthy()
 })
 
 function arraysEqualIgnoringOrder<T>(arr1: T[], arr2: T[]): boolean {

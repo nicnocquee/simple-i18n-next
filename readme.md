@@ -146,7 +146,8 @@ locales/.generated
     "generate-locales": "simple-i18n-next -i ./locales -l en",
     "dev": "npm run generate-locales && next dev",
     "build": "npm run generate-locales && next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "npm run check && npm run test:vitest"
   }
 }
 ```
