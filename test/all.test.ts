@@ -351,7 +351,7 @@ it('interpolation', () => {
   })
 
   const jiti = require('jiti')(__filename)
-  const { greeting } = jiti('./locales/.generated3/server')
+  const { greeting } = jiti('./locales/.generated3/strings')
 
   expect(greeting('en', { name: 'Nico' })).toBe('Hello Nico!')
 })
@@ -365,7 +365,7 @@ it('interpolation with multiple variables', () => {
   })
 
   const jiti = require('jiti')(__filename)
-  const { welcome } = jiti('./locales/.generated4/server')
+  const { welcome } = jiti('./locales/.generated4/strings')
 
   expect(welcome('en', { country: 'Switzerland', time: '4AM' })).toBe(
     "Welcome to Switzerland! It's 4AM now."
@@ -528,6 +528,13 @@ async function compareDirectories(sourceDir: string, targetDir: string): Promise
 
     if (sourceFileHash !== targetFileHash) {
       console.log(`File ${filePath} has different hash in source and target directory`)
+      const sourceFileContent = await fs.readFile(sourceFilePath, 'utf8')
+      const targetFileContent = await fs.readFile(targetFilePath, 'utf8')
+      console.log('-------------- SOURCE ------------------')
+      console.log(sourceFileContent)
+      console.log('-------------- TARGET ------------------')
+      console.log(targetFileContent)
+      console.log('--------------------------------')
       return false
     }
   }

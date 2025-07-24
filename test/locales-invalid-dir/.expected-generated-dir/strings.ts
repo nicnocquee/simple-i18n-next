@@ -3,9 +3,6 @@ import { SupportedLanguage } from './types';
 const enHello = "Hello world!"
 const enGreeting = "Hello {{name}}!"
 const enHome = "Home"
-/**
- * @deprecated Import from './strings' instead.
- */
 export const hello = (lang: SupportedLanguage) => {
       switch (lang) {
     case 'en': return enHello;
@@ -27,9 +24,6 @@ export const hello = (lang: SupportedLanguage) => {
 
       return interpolateTemplate(text, data)
     }
-/**
- * @deprecated Import from './strings' instead.
- */
 export const home = (lang: SupportedLanguage) => {
       switch (lang) {
     case 'en': return enHome;

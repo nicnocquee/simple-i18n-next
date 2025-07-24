@@ -215,7 +215,7 @@ In the React components, you can use the interpolated variable like this:
 ```tsx
 // app/[lang]/page.tsx
 import { SupportedLanguage } from '@/locales/.generated/types'
-import { hello } from 'locales/.generated/server'
+import { hello } from 'locales/.generated/strings'
 
 export default function HomePage({ params: { lang } }: { params: { lang: SupportedLanguage } }) {
   return <div>{hello(lang, { name: 'Nico' })}</div>
@@ -248,7 +248,7 @@ To use translations in React Server Components (RSC), import the generated funct
 
 ```tsx
 import { SupportedLanguage } from '@/locales/.generated/types'
-import { hello } from 'locales/.generated/server'
+import { hello } from 'locales/.generated/strings'
 
 export default function HomePage({ params: { lang } }: { params: { lang: SupportedLanguage } }) {
   return <div>{hello(lang)}</div>
@@ -441,7 +441,7 @@ import { SupportedLanguage } from '@/locales/.generated/types'
 import {
   bookWithCount,
   movieWithOrdinalCount,
-} from "@/locales/.generated/server";
+} from "@/locales/.generated/strings";
 export default function Home({
   params: { lang },
 }: Readonly<{ params: { lang: SupportedLanguage } }>) {
@@ -589,7 +589,7 @@ and a `locales/de/messages.json` file that contains the following content:
 Then in your React component, you can use the nested key like this:
 
 ```tsx
-import { pageTitle, pageSectionTitle } from 'locales/.generated/server'
+import { pageTitle, pageSectionTitle } from 'locales/.generated/strings'
 
 export default function HomePage({ params: { lang } }: { params: { lang: SupportedLanguage } }) {
   return (

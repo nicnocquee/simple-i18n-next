@@ -1,18 +1,15 @@
-import catWithOrdinalCountEn from './client/en/catWithOrdinalCount'
-import appleWithCountEn from './client/en/appleWithCount'
-import catWithOrdinalCountDe from './client/de/catWithOrdinalCount'
-import appleWithCountDe from './client/de/appleWithCount'
 import { interpolateTemplate } from './common';
 import { SupportedLanguage } from './types';
 const deHello = "Hallo Welt!"
 const deGreeting = "Hallo {{name}}!"
 const deHome = "Startseite"
+const dePageTitle = "Seitentitel"
+const dePageSectionTitle = "Sektionentitel"
 const enHello = "Hello world!"
 const enGreeting = "Hello {{name}}!"
 const enHome = "Home"
-/**
- * @deprecated Import from './strings' instead.
- */
+const enPageTitle = "Page title"
+const enPageSectionTitle = "Section title"
 export const hello = (lang: SupportedLanguage) => {
       switch (lang) {
     case 'de': return deHello;
@@ -36,9 +33,6 @@ case 'en': text = enGreeting; break;
 
       return interpolateTemplate(text, data)
     }
-/**
- * @deprecated Import from './strings' instead.
- */
 export const home = (lang: SupportedLanguage) => {
       switch (lang) {
     case 'de': return deHome;
@@ -47,31 +41,19 @@ case 'en': return enHome;
             return enHome
         }
     }
-
-    export function appleWithCount(lang: SupportedLanguage, count: number) {
-      let text = "";
-  
+export const pageTitle = (lang: SupportedLanguage) => {
       switch (lang) {
-         case "de": text = appleWithCountDe(count); break;
-case "en": text = appleWithCountEn(count); break;
-          default:
-            break;
-      }
-
-      return interpolateTemplate(text, { count: `${count}` });
-  }
-    
-
-    export function catWithOrdinalCount(lang: SupportedLanguage, count: number) {
-      let text = "";
-  
+    case 'de': return dePageTitle;
+case 'en': return enPageTitle;
+        default:
+            return enPageTitle
+        }
+    }
+export const pageSectionTitle = (lang: SupportedLanguage) => {
       switch (lang) {
-         case "de": text = catWithOrdinalCountDe(count); break;
-case "en": text = catWithOrdinalCountEn(count); break;
-          default:
-            break;
-      }
-
-      return interpolateTemplate(text, { count: `${count}` });
-  }
-    
+    case 'de': return dePageSectionTitle;
+case 'en': return enPageSectionTitle;
+        default:
+            return enPageSectionTitle
+        }
+    }

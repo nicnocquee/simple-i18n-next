@@ -221,6 +221,7 @@ export function generateLocale({
   const typeDefsOutputFile = path.join(outputDir, 'types.ts')
   const commonOutputFile = path.join(outputDir, 'common.ts')
   const hooksOutputFile = path.join(clientOutputDir, 'hooks.tsx')
+  const stringsOutputFile = path.join(outputDir, 'strings.ts')
 
   // Create output directories if they don't exist
   fs.mkdirSync(outputDir, { recursive: true })
@@ -543,8 +544,21 @@ export default function <<key>>WithOrdinalCount(count: number) {
   const reorderedLocaleFunctions = localeFunctions.sort((a, b) => {
     return a.startsWith('import') ? -1 : b.startsWith('import') ? 1 : 0
   })
-  // Write the server locale functions to a file
-  fs.writeFileSync(outputFile, [...new Set(reorderedLocaleFunctions)].join('\n'))
+  // Write the server locale functions to a file (new: strings.ts)
+  fs.writeFileSync(stringsOutputFile, [...new Set(reorderedLocaleFunctions)].join('\n'))
+  // Write the server locale functions to a file (legacy: server.ts)
+  // Add deprecation comments to every exported function in server.ts
+  const deprecatedLocaleFunctions = [...new Set(reorderedLocaleFunctions)].map((line) => {
+    if (line.trim().startsWith('export const ')) {
+      const fnNameMatch = line.match(/export const (\w+)/)
+      if (fnNameMatch) {
+        return `/**\n * @deprecated Import from './strings' instead.\n */\n${line}`
+      }
+    }
+
+    return line
+  })
+  fs.writeFileSync(outputFile, deprecatedLocaleFunctions.join('\n'))
 
   // Handle markdown files
   const mdxFiles = findMdxFiles(path.join(localesDir, '.'))

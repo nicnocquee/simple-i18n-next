@@ -3,16 +3,11 @@ import { SupportedLanguage } from './types';
 const deHello = "Hallo Welt!"
 const deGreeting = "Hallo {{name}}!"
 const deHome = "Startseite"
-const dePageTitle = "Seitentitel"
-const dePageSectionTitle = "Sektionentitel"
+const deWelcome = "Willkommen in {{country}}! Es ist {{time}} jetzt."
 const enHello = "Hello world!"
 const enGreeting = "Hello {{name}}!"
 const enHome = "Home"
-const enPageTitle = "Page title"
-const enPageSectionTitle = "Section title"
-/**
- * @deprecated Import from './strings' instead.
- */
+const enWelcome = "Welcome to {{country}}! It's {{time}} now."
 export const hello = (lang: SupportedLanguage) => {
       switch (lang) {
     case 'de': return deHello;
@@ -36,9 +31,6 @@ case 'en': text = enGreeting; break;
 
       return interpolateTemplate(text, data)
     }
-/**
- * @deprecated Import from './strings' instead.
- */
 export const home = (lang: SupportedLanguage) => {
       switch (lang) {
     case 'de': return deHome;
@@ -47,25 +39,19 @@ case 'en': return enHome;
             return enHome
         }
     }
-/**
- * @deprecated Import from './strings' instead.
- */
-export const pageTitle = (lang: SupportedLanguage) => {
+
+    type welcomeProps = {
+  country: string;
+  time: string;
+}
+    export const welcome = (lang: SupportedLanguage, data: welcomeProps) => {
+      let text = ''
       switch (lang) {
-    case 'de': return dePageTitle;
-case 'en': return enPageTitle;
+    case 'de': text = deWelcome; break;
+case 'en': text = enWelcome; break;
         default:
-            return enPageTitle
+            text = enWelcome
         }
-    }
-/**
- * @deprecated Import from './strings' instead.
- */
-export const pageSectionTitle = (lang: SupportedLanguage) => {
-      switch (lang) {
-    case 'de': return dePageSectionTitle;
-case 'en': return enPageSectionTitle;
-        default:
-            return enPageSectionTitle
-        }
+
+      return interpolateTemplate(text, data)
     }

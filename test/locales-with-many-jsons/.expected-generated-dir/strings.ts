@@ -24,9 +24,6 @@ const enHome = "Home"
 const enSomethingHello = "Hello world in something!"
 const enSomethingGreeting = "Hello, something {{name}}!"
 const enSomethingHome = "Home something"
-/**
- * @deprecated Import from './strings' instead.
- */
 export const anotherFileHello = (lang: SupportedLanguage) => {
       switch (lang) {
     case 'de': return deAnotherFileHello;
@@ -50,9 +47,6 @@ case 'en': text = enAnotherFileGreeting; break;
 
       return interpolateTemplate(text, data)
     }
-/**
- * @deprecated Import from './strings' instead.
- */
 export const anotherFileHome = (lang: SupportedLanguage) => {
       switch (lang) {
     case 'de': return deAnotherFileHome;
@@ -61,9 +55,6 @@ case 'en': return enAnotherFileHome;
             return enAnotherFileHome
         }
     }
-/**
- * @deprecated Import from './strings' instead.
- */
 export const anotherFileClientHello = (lang: SupportedLanguage) => {
       switch (lang) {
     case 'de': return deAnotherFileClientHello;
@@ -87,9 +78,6 @@ case 'en': text = enAnotherFileClientAnotherBye; break;
 
       return interpolateTemplate(text, data)
     }
-/**
- * @deprecated Import from './strings' instead.
- */
 export const hello = (lang: SupportedLanguage) => {
       switch (lang) {
     case 'de': return deHello;
@@ -113,9 +101,6 @@ case 'en': text = enGreeting; break;
 
       return interpolateTemplate(text, data)
     }
-/**
- * @deprecated Import from './strings' instead.
- */
 export const home = (lang: SupportedLanguage) => {
       switch (lang) {
     case 'de': return deHome;
@@ -124,9 +109,6 @@ case 'en': return enHome;
             return enHome
         }
     }
-/**
- * @deprecated Import from './strings' instead.
- */
 export const somethingHello = (lang: SupportedLanguage) => {
       switch (lang) {
     case 'de': return deSomethingHello;
@@ -150,9 +132,6 @@ case 'en': text = enSomethingGreeting; break;
 
       return interpolateTemplate(text, data)
     }
-/**
- * @deprecated Import from './strings' instead.
- */
 export const somethingHome = (lang: SupportedLanguage) => {
       switch (lang) {
     case 'de': return deSomethingHome;

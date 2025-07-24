@@ -8,6 +8,9 @@ const enHello = "Hello world!"
 const enGreeting = "Hello {{name}}!"
 const enHome = "Home"
 const enWelcome = "Welcome to {{country}}! It's {{time}} now."
+/**
+ * @deprecated Import from './strings' instead.
+ */
 export const hello = (lang: SupportedLanguage) => {
       switch (lang) {
     case 'de': return deHello;
@@ -31,6 +34,9 @@ case 'en': text = enGreeting; break;
 
       return interpolateTemplate(text, data)
     }
+/**
+ * @deprecated Import from './strings' instead.
+ */
 export const home = (lang: SupportedLanguage) => {
       switch (lang) {
     case 'de': return deHome;
