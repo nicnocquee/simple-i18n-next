@@ -1,11 +1,11 @@
 import anotherFileCounterWithCountEn from './client/en/anotherFileCounterWithCount'
 import anotherFileCounterWithCountDe from './client/de/anotherFileCounterWithCount'
-import { somethingGreetingProps } from './types'
-import { greetingProps } from './types'
-import { anotherFileClientAnotherByeProps } from './types'
-import { anotherFileGreetingProps } from './types'
+import { type somethingGreetingProps } from './types'
+import { type greetingProps } from './types'
+import { type anotherFileClientAnotherByeProps } from './types'
+import { type anotherFileGreetingProps } from './types'
 import { interpolateTemplate } from './common';
-import { SupportedLanguage } from './types';
+import { type SupportedLanguage } from './types';
 const deAnotherFileHello = "Hallo Welt in anderes Datei!"
 const deAnotherFileGreeting = "Hallo, anderes Datei {{name}}!"
 const deAnotherFileHome = "Startseite anderes Datei"

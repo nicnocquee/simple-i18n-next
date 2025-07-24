@@ -1,5 +1,5 @@
-import { ComponentProps } from 'react';
-import { SupportedLanguage } from './types';
+import { type ComponentProps } from 'react';
+import { type SupportedLanguage } from './types';
 import DedIndexMarkdown from '../ded/index.mdx';
 import EnIndexMarkdown from '../en/index.mdx';
 const DedIndex = (props: ComponentProps<typeof DedIndexMarkdown>) => <DedIndexMarkdown {...props} />;

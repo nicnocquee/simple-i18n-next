@@ -2,9 +2,9 @@ import catWithOrdinalCountEn from './client/en/catWithOrdinalCount'
 import appleWithCountEn from './client/en/appleWithCount'
 import catWithOrdinalCountDe from './client/de/catWithOrdinalCount'
 import appleWithCountDe from './client/de/appleWithCount'
-import { greetingProps } from './types'
+import { type greetingProps } from './types'
 import { interpolateTemplate } from './common';
-import { SupportedLanguage } from './types';
+import { type SupportedLanguage } from './types';
 const deHello = "Hallo Welt!"
 const deGreeting = "Hallo {{name}}!"
 const deHome = "Startseite"

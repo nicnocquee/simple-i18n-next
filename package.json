@@ -69,8 +69,8 @@
     "jiti": "^1.21.0",
     "jsdom": "^26.1.0",
     "prettier": "^3.2.5",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "rimraf": "^5.0.5",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
@@ -82,7 +82,8 @@
     "extends": "xo-react",
     "prettier": true,
     "ignores": [
-      "**/*.test.ts*"
+      "**/*.test.ts*",
+      "mdx.d.ts"
     ],
     "rules": {
       "@typescript-eslint/prefer-regexp-exec": "off",

@@ -1,6 +1,6 @@
-import { greetingProps } from './types'
+import { type greetingProps } from './types'
 import { interpolateTemplate } from './common';
-import { SupportedLanguage } from './types';
+import { type SupportedLanguage } from './types';
 const enHello = "Hello world!"
 const enGreeting = "Hello {{name}}!"
 const enHome = "Home"

@@ -251,7 +251,7 @@ export function generateLocale({
   ]
 
   const localeFunctions: string[] = [
-    `import { SupportedLanguage } from './types';`,
+    `import { type SupportedLanguage } from './types';`,
     `import { interpolateTemplate } from './common';`,
   ]
 
@@ -325,7 +325,7 @@ export function generateLocale({
       if (propType && !propTypes[genericFunctionName]) {
         propTypes[genericFunctionName] = propType
         typeDefs.push(`export ${propType.content}`)
-        localeFunctions.push(`import { ${propType.name} } from './types'`)
+        localeFunctions.push(`import { type ${propType.name} } from './types'`)
       }
 
       const hasProps = propType && genericFunctionName in propTypes
@@ -587,8 +587,8 @@ export default function <<key>>WithOrdinalCount(count: number) {
   // Handle markdown files
   const mdxFiles = findMdxFiles(path.join(localesDir, '.'))
   const localesMarkdownContent: string[] = [
-    `import { ComponentProps } from 'react';`,
-    `import { SupportedLanguage } from './types';`,
+    `import { type ComponentProps } from 'react';`,
+    `import { type SupportedLanguage } from './types';`,
   ]
 
   const langComponents: Record<string, Record<string, string>> = {}
@@ -660,6 +660,9 @@ export default function <<key>>WithOrdinalCount(count: number) {
 
   // Write the common code to a file
   fs.writeFileSync(commonOutputFile, common.join('\n'))
+
+  // Copy mdx.d.ts to the output directory
+  fs.copyFileSync(path.join(dirName, 'mdx.d.ts'), path.join(outputDir, 'mdx.d.ts'))
 }
 
 const hooks = fs.readFileSync(path.join(dirName, 'hooks.template'), 'utf8')

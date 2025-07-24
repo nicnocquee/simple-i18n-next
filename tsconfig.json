@@ -4,5 +4,5 @@
     "outDir": "dist"
   },
   "include": ["source"],
-  "exclude": ["test/locales*/.generated/**/*", "test/locales*/.expected-generated-dir/**/*"]
+  "exclude": ["test/locales*/.generated/**/*"]
 }

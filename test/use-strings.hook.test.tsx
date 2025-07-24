@@ -4,7 +4,6 @@
 // Before running the tests, you will see import errors in this file. Ignore them. Just run the tests.
 import { describe, test, expect } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
-import { interpolateTemplate } from './locales-with-plurals-vitest/.generated-vitest/common.ts'
 
 describe('useStrings hook', () => {
   test('returns correct value for hello key', async () => {
