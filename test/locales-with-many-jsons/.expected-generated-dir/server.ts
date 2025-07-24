@@ -1,5 +1,9 @@
 import anotherFileCounterWithCountEn from './client/en/anotherFileCounterWithCount'
 import anotherFileCounterWithCountDe from './client/de/anotherFileCounterWithCount'
+import { somethingGreetingProps } from './types'
+import { greetingProps } from './types'
+import { anotherFileClientAnotherByeProps } from './types'
+import { anotherFileGreetingProps } from './types'
 import { interpolateTemplate } from './common';
 import { SupportedLanguage } from './types';
 const deAnotherFileHello = "Hallo Welt in anderes Datei!"
@@ -35,10 +39,10 @@ case 'en': return enAnotherFileHello;
             return enAnotherFileHello
         }
     }
+/**
+ * @deprecated Import from './strings' instead.
+ */
 
-    type anotherFileGreetingProps = {
-  name: string;
-}
     export const anotherFileGreeting = (lang: SupportedLanguage, data: anotherFileGreetingProps) => {
       let text = ''
       switch (lang) {
@@ -72,10 +76,10 @@ case 'en': return enAnotherFileClientHello;
             return enAnotherFileClientHello
         }
     }
+/**
+ * @deprecated Import from './strings' instead.
+ */
 
-    type anotherFileClientAnotherByeProps = {
-  name: string;
-}
     export const anotherFileClientAnotherBye = (lang: SupportedLanguage, data: anotherFileClientAnotherByeProps) => {
       let text = ''
       switch (lang) {
@@ -98,10 +102,10 @@ case 'en': return enHello;
             return enHello
         }
     }
+/**
+ * @deprecated Import from './strings' instead.
+ */
 
-    type greetingProps = {
-  name: string;
-}
     export const greeting = (lang: SupportedLanguage, data: greetingProps) => {
       let text = ''
       switch (lang) {
@@ -135,10 +139,10 @@ case 'en': return enSomethingHello;
             return enSomethingHello
         }
     }
+/**
+ * @deprecated Import from './strings' instead.
+ */
 
-    type somethingGreetingProps = {
-  name: string;
-}
     export const somethingGreeting = (lang: SupportedLanguage, data: somethingGreetingProps) => {
       let text = ''
       switch (lang) {

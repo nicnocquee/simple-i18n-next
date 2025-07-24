@@ -1,5 +1,5 @@
 import { interpolateTemplate } from "../common";
-import { SupportedLanguage, defaultLanguage, StringKeys } from '../types';
+import { SupportedLanguage, defaultLanguage, StringKeys, ArgsProps } from '../types';
 import { useState, useMemo, useEffect } from "react";
 
 type Identity<T> = T extends object ? { [K in keyof T]: T[K] } : T;
@@ -12,17 +12,23 @@ type StringKeysWithCount<T> = Extract<
   `${string}WithCount` | `${string}WithOrdinalCount`
 >;
 type WithCountFunc = (count: number) => string;
+type WithArgsFunc = (args: ArgsProps) => string;
 export const useStrings = <T extends StringKeys>(
   keys: T[],
   lang: SupportedLanguage = defaultLanguage
 ): [
   Record<Identity<StringKeysWithoutCount<T>>, string> | null,
+  Record<Identity<StringKeysWithoutCount<T>>, WithArgsFunc> | null,
   Record<StringKeysWithCount<T>, WithCountFunc> | null
 ] => {
   const [strings, setStrings] = useState<Record<
     Identity<StringKeysWithoutCount<T>>,
     string
   > | null>(null);
+  const [stringsWithArgs, setStringsWithArgs] = useState<Record<
+  Identity<StringKeysWithoutCount<T>>,
+  WithArgsFunc
+> | null>(null);
   const [plurals, setPlurals] = useState<Record<
     StringKeysWithCount<T>,
     WithCountFunc
@@ -42,47 +48,56 @@ export const useStrings = <T extends StringKeys>(
           memoizedKeys.map(async (key) => {
             const importedModule = await import(`./${memoizedLang}/${key}.tsx`);
             if (signal.aborted && !isCleanedup) return null;
-            return { key, data: importedModule.default };
+            return { key, data: importedModule.default, args: importedModule.args };
           })
         );
 
         if (signal.aborted) return;
 
         const strings = data
-          .filter(
-            (d) =>
-              d &&
-              !d.key.endsWith("WithCount") &&
-              !d.key.endsWith("WithOrdinalCount")
-          )
           .reduce(
-            (acc, cur) => (cur ? { ...acc, [cur.key]: cur.data } : acc),
+            (acc, cur) => {
+              if (!( cur &&
+                !cur.key.endsWith("WithCount") &&
+                !cur.key.endsWith("WithOrdinalCount")
+                && !cur.args)) return acc
+              return cur ? { ...acc, [cur.key]: cur.data } : acc
+            },
             {} as Record<Identity<StringKeysWithoutCount<T>>, string>
           );
 
+        const stringsWithArgs = data
+          .reduce((acc, cur) => {
+            if (!(cur &&
+              !cur.key.endsWith("WithCount") &&
+              !cur.key.endsWith("WithOrdinalCount")
+              && cur.args)) return acc
+            return cur ? { ...acc, [cur.key]: (args: Record<typeof cur.args[number], string>) => interpolateTemplate(cur.data, args) } : acc
+          }, {} as Record<Identity<StringKeysWithoutCount<T>>, WithArgsFunc>)
+
         const plurals = data
-          .filter(
-            (d) =>
-              d &&
-              (d.key.endsWith("WithCount") ||
-                d.key.endsWith("WithOrdinalCount"))
-          )
           .reduce(
-            (acc, cur) =>
-              cur
-                ? {
-                    ...acc,
-                    [cur.key]: (count: number): string => {
-                      return interpolateTemplate(cur.data(count), {
-                        count: `${count}`,
-                      });
-                    },
-                  }
-                : acc,
+            (acc, cur) => {
+              if (!( cur &&
+                (cur.key.endsWith("WithCount") ||
+                  cur.key.endsWith("WithOrdinalCount")))) return acc
+              return cur
+              ? {
+                  ...acc,
+                  [cur.key]: (count: number): string => {
+                    return interpolateTemplate(cur.data(count), {
+                      count: `${count}`,
+                    });
+                  },
+                }
+              : acc
+            }
+              ,
             {} as Record<StringKeysWithCount<T>, WithCountFunc>
           );
 
         setStrings(strings);
+        setStringsWithArgs(stringsWithArgs);
         setPlurals(plurals);
       } catch (error) {
         if (!isCleanedup) {
@@ -101,5 +116,5 @@ export const useStrings = <T extends StringKeys>(
     };
   }, [memoizedLang, memoizedKeys]);
 
-  return [strings, plurals] as const;
+  return [strings, plurals, stringsWithArgs] as const;
 };

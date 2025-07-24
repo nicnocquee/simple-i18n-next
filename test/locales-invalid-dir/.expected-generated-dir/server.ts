@@ -1,3 +1,4 @@
+import { greetingProps } from './types'
 import { interpolateTemplate } from './common';
 import { SupportedLanguage } from './types';
 const enHello = "Hello world!"
@@ -13,10 +14,10 @@ export const hello = (lang: SupportedLanguage) => {
             return enHello
         }
     }
+/**
+ * @deprecated Import from './strings' instead.
+ */
 
-    type greetingProps = {
-  name: string;
-}
     export const greeting = (lang: SupportedLanguage, data: greetingProps) => {
       let text = ''
       switch (lang) {

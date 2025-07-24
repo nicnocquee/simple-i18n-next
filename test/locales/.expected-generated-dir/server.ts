@@ -1,3 +1,5 @@
+import { welcomeProps } from './types'
+import { greetingProps } from './types'
 import { interpolateTemplate } from './common';
 import { SupportedLanguage } from './types';
 const deHello = "Hallo Welt!"
@@ -19,10 +21,10 @@ case 'en': return enHello;
             return enHello
         }
     }
+/**
+ * @deprecated Import from './strings' instead.
+ */
 
-    type greetingProps = {
-  name: string;
-}
     export const greeting = (lang: SupportedLanguage, data: greetingProps) => {
       let text = ''
       switch (lang) {
@@ -45,11 +47,10 @@ case 'en': return enHome;
             return enHome
         }
     }
+/**
+ * @deprecated Import from './strings' instead.
+ */
 
-    type welcomeProps = {
-  country: string;
-  time: string;
-}
     export const welcome = (lang: SupportedLanguage, data: welcomeProps) => {
       let text = ''
       switch (lang) {

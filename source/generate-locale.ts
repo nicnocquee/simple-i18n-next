@@ -319,16 +319,28 @@ export function generateLocale({
 
       const genericFunctionName = arrayToCamelCase(key.split(' '))
       stringKeys.push(genericFunctionName)
-      const clientContent = `export default ${JSON.stringify(value)}`
-      fs.writeFileSync(
-        path.join(clientOutputDir, lang, `${genericFunctionName}.tsx`),
-        clientContent
-      )
+      const clientContentDefaultExport = `export default ${JSON.stringify(value)}`
 
       const propType = value ? generatePropTypes(value, genericFunctionName) : null
       if (propType && !propTypes[genericFunctionName]) {
         propTypes[genericFunctionName] = propType
+        typeDefs.push(`export ${propType.content}`)
+        localeFunctions.push(`import { ${propType.name} } from './types'`)
       }
+
+      const hasProps = propType && genericFunctionName in propTypes
+      const clientContent = `${clientContentDefaultExport}\n\nexport const args = ${
+        hasProps
+          ? `[${Object.keys(propType)
+              .map((key) => `"${key}"`)
+              .join(', ')}] as const`
+          : 'null'
+      }`
+
+      fs.writeFileSync(
+        path.join(clientOutputDir, lang, `${genericFunctionName}.tsx`),
+        clientContent
+      )
 
       langFunctions[genericFunctionName] ||= {}
       ;(langFunctions[genericFunctionName] as Record<string, string>)[lang] = functionName
@@ -382,7 +394,6 @@ export function generateLocale({
     const propType = propTypes[key]
     if (propType) {
       const functionBody = `
-    ${propType.content}
     export const ${key} = (lang: SupportedLanguage, data: ${propType.name}) => {
       let text = ''
       switch (lang) {
@@ -540,6 +551,19 @@ export default function <<key>>WithOrdinalCount(count: number) {
   const uniqueStringKeys = [...new Set(stringKeys)]
 
   typeDefs.push(`export type StringKeys = ${uniqueStringKeys.map((k) => `'${k}'`).join(' | ')}`)
+
+  if (Object.keys(propTypes).length > 0) {
+    let argsProps = 'export type ArgsProps = '
+    const x = Object.keys(propTypes)
+      .map((key) => {
+        return `${key}Props`
+      })
+      .join(' | ')
+
+    argsProps += `${x}`
+
+    typeDefs.push(argsProps)
+  }
 
   const reorderedLocaleFunctions = localeFunctions.sort((a, b) => {
     return a.startsWith('import') ? -1 : b.startsWith('import') ? 1 : 0

@@ -2,6 +2,7 @@ import catWithOrdinalCountEn from './client/en/catWithOrdinalCount'
 import appleWithCountEn from './client/en/appleWithCount'
 import catWithOrdinalCountDe from './client/de/catWithOrdinalCount'
 import appleWithCountDe from './client/de/appleWithCount'
+import { greetingProps } from './types'
 import { interpolateTemplate } from './common';
 import { SupportedLanguage } from './types';
 const deHello = "Hallo Welt!"
@@ -19,9 +20,6 @@ case 'en': return enHello;
         }
     }
 
-    type greetingProps = {
-  name: string;
-}
     export const greeting = (lang: SupportedLanguage, data: greetingProps) => {
       let text = ''
       switch (lang) {

@@ -231,11 +231,12 @@ In a client component, you can use the interpolated variables with the `interpol
 import { interpolateTemplate } from '@/locales/.generated/common'
 
 export default function ClientComponent() {
-  const [strings] = useStrings(['bye', 'home'])
-  if (!strings) return null
+  // stringsWithArgs is the third element in the array
+  const [strings, , stringsWithArgs] = useStrings(['bye', 'home'])
+  if (!stringsWithArgs) return null
   return (
     <div className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1>{interpolateTemplate(strings.bye, { name: 'John' })}</h1>
+      <h1>{stringsWithArgs.bye({ name: 'John' })}</h1>
       <Link href={`/`}>{strings.home}</Link>
     </div>
   )
@@ -681,10 +682,11 @@ Parameters:
 - `keys`: An array of string keys to be used in the component. The keys can only be those defined in `StringKeys`. If you pass unknown keys, TypeScript will throw an error.
 - `lang`: The language code to use for the translations. The value should be one of the supported language codes.
 
-Returns a tuple:
+Returns an array of exactly 3 elements:
 
-- `strings`: An array of translated strings, excluding the plural keys.
-- `plurals`: An array of functions that can be used to translate the plural keys.
+1. `strings`: An array of translated strings, excluding the plural keys and the keys with arguments.
+2. `plurals`: An array of functions that can be used to translate the plural keys.
+3. `stringsWithArgs`: An array of functions that can be used to translate the keys with arguments.
 
 Example:
 
@@ -720,7 +722,7 @@ import { useStrings } from '@/locales/.generated/client/hooks'
 
 export default function ClientComponent() {
   const lang = useSelectedLanguageFromPathname()
-  const [strings, plurals] = useStrings(
+  const [strings, plurals, stringsWithArgs] = useStrings(
     [
       'hello',
       'greeting',
@@ -731,10 +733,11 @@ export default function ClientComponent() {
   )
   if (!strings) return null
   if (!plurals) return null
+  if (!stringsWithArgs) return null
   return (
     <div>
       <h1>{strings.hello}</h1>
-      <p>{strings.greeting({name: 'John'})}</p>
+      <p>{stringsWithArgs.greeting({name: 'John'})}</p>
       <p>{plurals.appleWithCount(1)}</p>
       <p>{plurals.appleWithCount(2)}</p>
       <p>{plurals.appleWithCount(3)}</p>
@@ -748,6 +751,8 @@ export default function ClientComponent() {
     </div>
   )
 ```
+
+In the example above, since the `greeting` key has arguments, it is only available in the `stringsWithArgs` array as a function that receives the arguments.
 
 ### supportedLanguages
 

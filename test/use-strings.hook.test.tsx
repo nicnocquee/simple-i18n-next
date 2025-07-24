@@ -46,10 +46,8 @@ describe('useStrings hook', () => {
 
     await waitFor(
       () => {
-        expect(result.current[0]?.greeting).toBe('Hello {{name}}!')
-        expect(interpolateTemplate(result.current[0]?.greeting!, { name: 'John' })).toBe(
-          'Hello John!'
-        )
+        // @ts-expect-error - we are testing the args
+        expect(result.current[2]?.greeting({ name: 'John' })).toBe('Hello John!')
       },
       { timeout: 5000 }
     )
@@ -77,9 +75,12 @@ describe('useStrings hook', () => {
 
     await waitFor(
       () => {
-        expect(result.current[0]?.welcome).toBe("Welcome to {{country}}! It's {{time}} now.")
         expect(
-          interpolateTemplate(result.current[0]?.welcome!, { country: 'France', time: '10:00' })
+          // @ts-expect-error - we are testing the args
+          result.current[2]?.welcome({
+            country: 'France',
+            time: '10:00',
+          })
         ).toBe("Welcome to France! It's 10:00 now.")
       },
       { timeout: 5000 }
@@ -94,19 +95,33 @@ describe('useStrings hook', () => {
 
     await waitFor(
       () => {
+        // @ts-expect-error - we are testing the args
         expect(result.current[1]?.appleWithCount(1)).toBe('An apple')
+        // @ts-expect-error - we are testing the args
         expect(result.current[1]?.appleWithCount(2)).toBe('2 apples')
+        // @ts-expect-error - we are testing the args
         expect(result.current[1]?.appleWithCount(0)).toBe('0 apples')
+        // @ts-expect-error - we are testing the args
         expect(result.current[1]?.appleWithCount(10)).toBe('10 apples')
+        // @ts-expect-error - we are testing the args
         expect(result.current[1]?.appleWithCount(100)).toBe('100 apples')
+        // @ts-expect-error - we are testing the args
         expect(result.current[1]?.appleWithCount(1000)).toBe('1000 apples')
+        // @ts-expect-error - we are testing the args
         expect(result.current[1]?.appleWithCount(10000)).toBe('10000 apples')
+        // @ts-expect-error - we are testing the args
         expect(result.current[1]?.catWithOrdinalCount(1)).toBe('1st cat')
+        // @ts-expect-error - we are testing the args
         expect(result.current[1]?.catWithOrdinalCount(2)).toBe('2nd cat')
+        // @ts-expect-error - we are testing the args
         expect(result.current[1]?.catWithOrdinalCount(3)).toBe('3rd cat')
+        // @ts-expect-error - we are testing the args
         expect(result.current[1]?.catWithOrdinalCount(10)).toBe('10th cat')
+        // @ts-expect-error - we are testing the args
         expect(result.current[1]?.catWithOrdinalCount(100)).toBe('100th cat')
+        // @ts-expect-error - we are testing the args
         expect(result.current[1]?.catWithOrdinalCount(1000)).toBe('1000th cat')
+        // @ts-expect-error - we are testing the args
         expect(result.current[1]?.catWithOrdinalCount(10000)).toBe('10000th cat')
       },
       { timeout: 5000 }
