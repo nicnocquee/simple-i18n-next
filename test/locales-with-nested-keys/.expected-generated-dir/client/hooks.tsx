@@ -1,9 +1,9 @@
 import { interpolateTemplate } from "../common";
 import {
-  SupportedLanguage,
+  type SupportedLanguage,
   defaultLanguage,
-  StringKeys,
-  ArgsProps,
+  type StringKeys,
+  type ArgsProps,
 } from "../types";
 import { useState, useMemo, useEffect } from "react";
 
@@ -20,11 +20,11 @@ type WithCountFunc = (count: number) => string;
 type WithArgsFunc = (args: ArgsProps) => string;
 export const useStrings = <T extends StringKeys>(
   keys: T[],
-  lang: SupportedLanguage = defaultLanguage,
+  lang: SupportedLanguage = defaultLanguage
 ): [
   Record<Identity<StringKeysWithoutCount<T>>, string> | null,
   Record<StringKeysWithCount<T>, WithCountFunc> | null,
-  Record<Identity<StringKeysWithoutCount<T>>, WithArgsFunc> | null,
+  Record<Identity<StringKeysWithoutCount<T>>, WithArgsFunc> | null
 ] => {
   const [strings, setStrings] = useState<Record<
     Identity<StringKeysWithoutCount<T>>,
@@ -58,82 +58,74 @@ export const useStrings = <T extends StringKeys>(
               data: importedModule.default,
               args: importedModule.args,
             };
-          }),
+          })
         );
 
         if (signal.aborted) return;
 
-        const strings = data.reduce(
-          (acc, cur) => {
-            if (
-              !(
-                cur &&
-                !cur.key.endsWith("WithCount") &&
-                !cur.key.endsWith("WithOrdinalCount") &&
-                !cur.args
-              )
+        const strings = data.reduce((acc, cur) => {
+          if (
+            !(
+              cur &&
+              !cur.key.endsWith("WithCount") &&
+              !cur.key.endsWith("WithOrdinalCount") &&
+              !cur.args
             )
-              return acc;
-            return cur ? { ...acc, [cur.key]: cur.data } : acc;
-          },
-          {} as Record<Identity<StringKeysWithoutCount<T>>, string>,
-        );
+          )
+            return acc;
+          return cur ? { ...acc, [cur.key]: cur.data } : acc;
+        }, {} as Record<Identity<StringKeysWithoutCount<T>>, string>);
 
-        const stringsWithArgs = data.reduce(
-          (acc, cur) => {
-            if (
-              !(
-                cur &&
-                !cur.key.endsWith("WithCount") &&
-                !cur.key.endsWith("WithOrdinalCount") &&
-                cur.args
-              )
+        const stringsWithArgs = data.reduce((acc, cur) => {
+          if (
+            !(
+              cur &&
+              !cur.key.endsWith("WithCount") &&
+              !cur.key.endsWith("WithOrdinalCount") &&
+              cur.args
             )
-              return acc;
-            return cur
-              ? {
-                  ...acc,
-                  [cur.key]: (
-                    args: Record<(typeof cur.args)[number], string>,
-                  ) => interpolateTemplate(cur.data, args),
-                }
-              : acc;
-          },
-          {} as Record<Identity<StringKeysWithoutCount<T>>, WithArgsFunc>,
-        );
+          )
+            return acc;
+          return cur
+            ? {
+                ...acc,
+                [cur.key]: (args: Record<(typeof cur.args)[number], string>) =>
+                  interpolateTemplate(cur.data, args),
+              }
+            : acc;
+        }, {} as Record<Identity<StringKeysWithoutCount<T>>, WithArgsFunc>);
 
-        const plurals = data.reduce(
-          (acc, cur) => {
-            if (
-              !(
-                cur &&
-                (cur.key.endsWith("WithCount") ||
-                  cur.key.endsWith("WithOrdinalCount"))
-              )
+        const plurals = data.reduce((acc, cur) => {
+          if (
+            !(
+              cur &&
+              (cur.key.endsWith("WithCount") ||
+                cur.key.endsWith("WithOrdinalCount"))
             )
-              return acc;
-            return cur
-              ? {
-                  ...acc,
-                  [cur.key]: (count: number): string => {
-                    return interpolateTemplate(cur.data(count), {
-                      count: `${count}`,
-                    });
-                  },
-                }
-              : acc;
-          },
-          {} as Record<StringKeysWithCount<T>, WithCountFunc>,
-        );
+          )
+            return acc;
+          return cur
+            ? {
+                ...acc,
+                [cur.key]: (count: number): string => {
+                  return interpolateTemplate(cur.data(count), {
+                    count: `${count}`,
+                  });
+                },
+              }
+            : acc;
+        }, {} as Record<StringKeysWithCount<T>, WithCountFunc>);
 
         setStrings(strings);
         setStringsWithArgs(stringsWithArgs);
         setPlurals(plurals);
       } catch (error) {
         if (!isCleanedup) {
-          signal.aborted
-            ? console.log("Fetch aborted")
-            : console.error("Error loading locale", error);
+          if (signal.aborted) {
+            console.log("Fetch aborted");
+          } else {
+            console.error("Error loading locale", error);
+          }
         }
       }
     }
