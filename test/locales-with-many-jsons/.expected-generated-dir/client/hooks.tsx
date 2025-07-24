@@ -1,5 +1,10 @@
 import { interpolateTemplate } from "../common";
-import { SupportedLanguage, defaultLanguage, StringKeys, ArgsProps } from '../types';
+import {
+  SupportedLanguage,
+  defaultLanguage,
+  StringKeys,
+  ArgsProps,
+} from "../types";
 import { useState, useMemo, useEffect } from "react";
 
 type Identity<T> = T extends object ? { [K in keyof T]: T[K] } : T;
@@ -15,20 +20,20 @@ type WithCountFunc = (count: number) => string;
 type WithArgsFunc = (args: ArgsProps) => string;
 export const useStrings = <T extends StringKeys>(
   keys: T[],
-  lang: SupportedLanguage = defaultLanguage
+  lang: SupportedLanguage = defaultLanguage,
 ): [
   Record<Identity<StringKeysWithoutCount<T>>, string> | null,
+  Record<StringKeysWithCount<T>, WithCountFunc> | null,
   Record<Identity<StringKeysWithoutCount<T>>, WithArgsFunc> | null,
-  Record<StringKeysWithCount<T>, WithCountFunc> | null
 ] => {
   const [strings, setStrings] = useState<Record<
     Identity<StringKeysWithoutCount<T>>,
     string
   > | null>(null);
   const [stringsWithArgs, setStringsWithArgs] = useState<Record<
-  Identity<StringKeysWithoutCount<T>>,
-  WithArgsFunc
-> | null>(null);
+    Identity<StringKeysWithoutCount<T>>,
+    WithArgsFunc
+  > | null>(null);
   const [plurals, setPlurals] = useState<Record<
     StringKeysWithCount<T>,
     WithCountFunc
@@ -48,40 +53,66 @@ export const useStrings = <T extends StringKeys>(
           memoizedKeys.map(async (key) => {
             const importedModule = await import(`./${memoizedLang}/${key}.tsx`);
             if (signal.aborted && !isCleanedup) return null;
-            return { key, data: importedModule.default, args: importedModule.args };
-          })
+            return {
+              key,
+              data: importedModule.default,
+              args: importedModule.args,
+            };
+          }),
         );
 
         if (signal.aborted) return;
 
-        const strings = data
-          .reduce(
-            (acc, cur) => {
-              if (!( cur &&
+        const strings = data.reduce(
+          (acc, cur) => {
+            if (
+              !(
+                cur &&
                 !cur.key.endsWith("WithCount") &&
-                !cur.key.endsWith("WithOrdinalCount")
-                && !cur.args)) return acc
-              return cur ? { ...acc, [cur.key]: cur.data } : acc
-            },
-            {} as Record<Identity<StringKeysWithoutCount<T>>, string>
-          );
+                !cur.key.endsWith("WithOrdinalCount") &&
+                !cur.args
+              )
+            )
+              return acc;
+            return cur ? { ...acc, [cur.key]: cur.data } : acc;
+          },
+          {} as Record<Identity<StringKeysWithoutCount<T>>, string>,
+        );
 
-        const stringsWithArgs = data
-          .reduce((acc, cur) => {
-            if (!(cur &&
-              !cur.key.endsWith("WithCount") &&
-              !cur.key.endsWith("WithOrdinalCount")
-              && cur.args)) return acc
-            return cur ? { ...acc, [cur.key]: (args: Record<typeof cur.args[number], string>) => interpolateTemplate(cur.data, args) } : acc
-          }, {} as Record<Identity<StringKeysWithoutCount<T>>, WithArgsFunc>)
+        const stringsWithArgs = data.reduce(
+          (acc, cur) => {
+            if (
+              !(
+                cur &&
+                !cur.key.endsWith("WithCount") &&
+                !cur.key.endsWith("WithOrdinalCount") &&
+                cur.args
+              )
+            )
+              return acc;
+            return cur
+              ? {
+                  ...acc,
+                  [cur.key]: (
+                    args: Record<(typeof cur.args)[number], string>,
+                  ) => interpolateTemplate(cur.data, args),
+                }
+              : acc;
+          },
+          {} as Record<Identity<StringKeysWithoutCount<T>>, WithArgsFunc>,
+        );
 
-        const plurals = data
-          .reduce(
-            (acc, cur) => {
-              if (!( cur &&
+        const plurals = data.reduce(
+          (acc, cur) => {
+            if (
+              !(
+                cur &&
                 (cur.key.endsWith("WithCount") ||
-                  cur.key.endsWith("WithOrdinalCount")))) return acc
-              return cur
+                  cur.key.endsWith("WithOrdinalCount"))
+              )
+            )
+              return acc;
+            return cur
               ? {
                   ...acc,
                   [cur.key]: (count: number): string => {
@@ -90,11 +121,10 @@ export const useStrings = <T extends StringKeys>(
                     });
                   },
                 }
-              : acc
-            }
-              ,
-            {} as Record<StringKeysWithCount<T>, WithCountFunc>
-          );
+              : acc;
+          },
+          {} as Record<StringKeysWithCount<T>, WithCountFunc>,
+        );
 
         setStrings(strings);
         setStringsWithArgs(stringsWithArgs);
