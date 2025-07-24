@@ -11,7 +11,7 @@ Making your Next.js project support multiple languages should be simple. There s
 - **Type-safe translation**. That means there will be build-time errors if you use a translation key that does not exist in a specific language.
 - **Build-time error when missing translations**. Translation keys must cover all languages. As a result, an error message will appear if a translation for a specific language is missing.
 - **No JS code is sent to the client**. In React Server Components (RSC), the translations are generated inline during build time, so no JS code is sent to the client.
-- **Only necessary translations are sent**. When using the generated `useStrings` hook in client components, only the required translation strings are sent, avoiding any unused translations.
+- **Only necessary translations are sent**. When using the generated `useStrings` hook in client components to dynamically get localized strings, only the requested translation strings are downloaded.
 - **Markdown or MDX files are supported**. You can use Markdown or [MDX](https://mdxjs.com) files for each language.
 - **Pluralization support** with a simple syntax.
 - **Support for nested keys in the JSON files**.
@@ -19,8 +19,8 @@ Making your Next.js project support multiple languages should be simple. There s
 
 What this CLI is not or does not do:
 
-- It does not have language detection. You need to pass the language code to the generated functions. You can easily get the language code from the URL pathname if you follow the [Internationalization documentation of Next.js](https://nextjs.org/docs/app/guides/internationalization#routing-overview).
-- It does not support various localization sources. You can only use JSON files and Markdown files.
+- **It does not have language detection**. You need to pass the language code to the generated functions. You can easily get the language code from the URL pathname if you follow the [Internationalization documentation of Next.js](https://nextjs.org/docs/app/guides/internationalization#routing-overview).
+- **It does not support various localization sources.** You can only use JSON files and Markdown files.
 
 ## Install
 
@@ -146,7 +146,7 @@ Diese Seite ist die Übersicht.
 locales/.generated
 ```
 
-8. Update the package.json scripts to include the `simple-i18n-next` command:
+8. Update the package.json scripts to include the `simple-i18n-next` command and run it before the `dev` and `build` commands:
 
 ```json
 {
