@@ -4,7 +4,7 @@ export const interpolateTemplate = (text: string, data: Record<string, string>):
     let theText = text
   
     theText = theText.replace(/{{\s*(\w+)\s*}}/g, (match, key) => {
-      return key in data ? data[key] : match
+      return key in data ? (data[key] ?? match) : match
     })
   
     return theText
