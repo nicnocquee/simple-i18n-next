@@ -137,6 +137,20 @@ it('generateLocale from multiple json files', async () => {
   expect(identical).toBe(true)
 })
 
+it('generateLocale with non en default language', async () => {
+  generateLocale({
+    localesDir: path.resolve(process.cwd(), './test/locales-with-non-en-default'),
+    defaultLanguage: 'de',
+    outputDir: './test/locales-with-non-en-default/.generated',
+    silent: true,
+  })
+  const identical = await compareDirectories(
+    './test/locales-with-non-en-default/.generated',
+    './test/locales-with-non-en-default/.expected-generated-dir'
+  )
+  expect(identical).toBe(true)
+})
+
 it('getPluralKeys no missing', () => {
   const plurals = new Plurals('en')
 

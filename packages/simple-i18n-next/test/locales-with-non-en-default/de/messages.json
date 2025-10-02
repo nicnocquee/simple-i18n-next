@@ -1,0 +1,4 @@
+{
+  "wrong": "Falsch !",
+  "you_received": "Du erhälst <strong>{{points}}</strong> / <strong>{{maxPoints}}</strong> Punkten"
+}

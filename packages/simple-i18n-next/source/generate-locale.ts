@@ -192,6 +192,8 @@ export function generateLocale({
     throw new Error(
       `You specified a default language of ${defaultLanguage} but it does not exist in the ${localesDir} directory`
     )
+  } else if (defaultLanguage) {
+    showLog(`Using default language: ${defaultLanguage}`, silent)
   }
 
   const baseLang = defaultLanguage ?? (langs[0] as (typeof langs)[number])
@@ -399,7 +401,7 @@ export function generateLocale({
       switch (lang) {
     ${langs.map((lang) => `case '${lang}': text = ${langFunctions[key]?.[lang]}; break;`).join('\n')}
         default:
-            text = ${langFunctions[key]?.['en']}
+            text = ${langFunctions[key]?.[baseLang]}
         }
 
       return interpolateTemplate(text, data)
@@ -411,7 +413,7 @@ export function generateLocale({
       switch (lang) {
     ${langs.map((lang) => `case '${lang}': return ${langFunctions[key]?.[lang]};`).join('\n')}
         default:
-            return ${langFunctions[key]?.['en']}
+            return ${langFunctions[key]?.[baseLang]}
         }
     }`
 

@@ -5,3 +5,4 @@ npx tsx source/cli.tsx -i test/locales-invalid-dir/ -o test/locales-invalid-dir/
 npx tsx source/cli.tsx -i test/locales-with-many-jsons/ -o test/locales-with-many-jsons/.expected-generated-dir/ -l en
 npx tsx source/cli.tsx -i test/locales-with-nested-keys/ -o test/locales-with-nested-keys/.expected-generated-dir/ -l en
 npx tsx source/cli.tsx -i test/locales-with-plurals/ -o test/locales-with-plurals/.expected-generated-dir/ -l en
+npx tsx source/cli.tsx -i test/locales-with-non-en-default/ -o test/locales-with-non-en-default/.expected-generated-dir/ -l de
