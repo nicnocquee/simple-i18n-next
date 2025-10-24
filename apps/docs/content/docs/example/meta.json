@@ -1,6 +1,0 @@
-{
-  "title": "Example",
-  "icon": "MyIcon",
-  "pages": ["index", "react-router", "video-demo"],
-  "defaultOpen": true
-}
