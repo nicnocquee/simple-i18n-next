@@ -1,0 +1,50 @@
+---
+title: Using in components
+---
+
+After running the CLI, you can use the generated code in your components.
+
+## In React Server Components (RSC)
+
+To use translations in React Server Components (RSC), import the generated function of the key you want to use and call it with the language parameter.
+
+```tsx title="page.tsx"
+import { SupportedLanguage } from '@/locales/.generated/types';
+// [!code highlight:1]
+import { hello } from 'locales/.generated/strings';
+
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ lang: SupportedLanguage }>;
+}) {
+  const { lang } = await params;
+  // [!code highlight:1]
+  return <div>{hello(lang)}</div>;
+}
+```
+
+## Dynamic translations in client components
+
+The generated code by this CLI can actually be used in both the server component and client component. But if for some reasons you want to dynamically get the translations in the client component, you can use the `useStrings` hook. This hook is a custom React hook that you can import from the `@/locales/.generated/client/hooks`.
+
+```tsx title="client/page.tsx"
+'use client';
+import { useStrings } from '@/locales/.generated/client/hooks';
+
+export default function HomePage() {
+  // [!code highlight:1]
+  const [{ hello, comingSoon }] = useStrings(['hello', 'comingSoon']); // the keys are typed!
+
+  return (
+    <div>
+      <h1>{comingSoon}</h1>
+      <p>{hello}</p>
+    </div>
+  );
+}
+```
+
+The keys you pass to the `useStrings` hook are the keys you want to get the translations for and they are strongly typed. It means that you cannot pass an invalid key.
+
+If you don't pass the language code to the second argument of the `useStrings` hook, it will return the translations for the default language.

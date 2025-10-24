@@ -1,0 +1,27 @@
+---
+title: About
+---
+
+This is a CLI to generate TypeScript code from translation files in JSON format and Markdown files for modern React projects with TypeScript. It's been tested with [Next.js](https://nextjs.org/) and [React Router](https://reactrouter.com/home) projects.
+
+## Why?
+
+Making your React project support multiple languages should be simple. There shouldn't be too much setup involved. The existing solutions for internationalization (i18n) like react-i18next are slightly too complicated, e.g., you need to instantiate an instance, add middleware, add helpers for the server side and client side, etc.
+
+It should be as simple as providing a dictionary of translations and use it in your components. That's it.
+
+## Features
+
+- **Type-safe translation**. That means there will be build-time errors if you use a translation key that does not exist in a specific language. It's impossible to make a typo in the translation key.
+- **Build-time error when missing translations**. Translation keys must cover all languages. As a result, an error message will appear if a translation for a specific language is missing. E.g., if you have 2 languages, and in one of them you have a translation for the key `hello`, but in the other one you don't, an error message will appear.
+- **No JS code is sent to the client**. The translations are substituted inline during build time, so no JS code is sent to the client.
+- **Only necessary translations are sent**. When using the generated `useStrings` hook in client components to dynamically get localized strings, only the requested translation strings are downloaded. No useless data transfer!
+- **Markdown or MDX files are supported**. You can use Markdown or [MDX](https://mdxjs.com) files for each language.
+- **Pluralization support** with a simple syntax.
+- **Support for nested keys in the JSON files**.
+- **Support for multiple JSON files**.
+
+## What this CLI is not or does not do
+
+- **It does not have language detection**. You need to pass the language code to the generated functions. You can easily get the language code from the URL pathname if you follow the [Internationalization documentation of Next.js](https://nextjs.org/docs/app/guides/internationalization#routing-overview).
+- **It does not support various localization sources.** You can only use JSON files and Markdown files.

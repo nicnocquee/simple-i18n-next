@@ -1,0 +1,23 @@
+name: Deploy Documentation
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Pages
+        id: setup_pages
+        uses: actions/configure-pages@v5 # You need to add this step if you are NOT using custom domain
+
+      - name: Deploy docs to GitHub Pages
+        uses: nicnocquee/speed-docs-github-action@v1
+        with:
+          content-path: './docs'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          base-path: ${{ steps.setup_pages.outputs.base_path }} # You need to add this step if you are NOT using custom domain

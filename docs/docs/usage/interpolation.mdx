@@ -1,0 +1,72 @@
+---
+title: Interpolation
+description: Interpolation is a feature that allows you to use variables in your translations.
+---
+
+In the JSON files, you can use interpolation by using the `{{variable_name}}` syntax. For example, you can create a `locales/en/messages.json` file that contains the following content:
+
+```json title="locales/en/messages.json"
+{
+  "hello": "Hello, {{name}}!"
+}
+```
+
+In the React components, you can use the interpolated variable like this:
+
+```tsx title="app/[lang]/page.tsx"
+import { SupportedLanguage } from '@/locales/.generated/types';
+import { hello } from 'locales/.generated/strings';
+
+export default function HomePage({
+  params: { lang },
+}: {
+  params: { lang: SupportedLanguage };
+}) {
+  // [!code highlight:1]
+  return <div>{hello(lang, { name: 'Nico' })}</div>;
+}
+```
+
+which will render the following HTML when the `lang` is `en`:
+
+```html
+<div>Hello, Nico!</div>
+```
+
+The generated function like `hello` above is fully typed so you have to pass the correct variable name as shown above. Otherwise, you will get a TypeScript error.
+
+## Interpolation in client components
+
+When you use the `useStrings` hook in a client component to dynamically get the translations, you can use the `stringsWithArgs` object returned by the hook to get the translations functions.
+
+```tsx title="client/page.tsx"
+'use client';
+import { useStrings } from '@/locales/.generated/client/hooks';
+
+export default function ClientComponent() {
+  // [!code highlight:1]
+  const [strings, , stringsWithArgs] = useStrings(['bye', 'home']); // the keys are typed!
+  if (!stringsWithArgs) return null;
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-between p-24">
+      // [!code highlight:1]
+      <h1>{stringsWithArgs.bye({ name: 'John' })}</h1>
+      <Link href={`/`}>{strings.home}</Link>
+    </div>
+  );
+}
+```
+
+which will render the following HTML when the `lang` is `en`:
+
+```html
+<div>
+  <h1>Bye, John!</h1>
+  <a href="/">Home</a>
+</div>
+```
+
+<Callout>
+  The `stringsWithArgs` is the third element in the array returned by the
+  `useStrings` hook.
+</Callout>
