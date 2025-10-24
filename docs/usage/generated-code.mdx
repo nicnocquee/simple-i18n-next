@@ -1,0 +1,86 @@
+---
+title: Generated code
+description: How to use the generated code in your components
+---
+
+## Default JSON file
+
+The default JSON file is the `messages.json` files in each language directory.
+
+When the keys are from the default `messages.json` file, the generated function names are not prefixed with the file name. For example, if you have the following `locales/en/messages.json` file:
+
+```json title="locales/en/messages.json"
+{
+  "hello": "Hello"
+}
+```
+
+it will be converted to the following TypeScript code:
+
+```typescript
+export const hello = (lang: SupportedLanguage) => {
+  // content
+};
+```
+
+Which you can import in your components like this:
+
+```tsx title="page.tsx"
+import { SupportedLanguage } from '@/locales/.generated/types'; // adjust the path to the generated directory
+// [!code highlight:1]
+import { hello } from '@/locales/.generated/strings';
+
+export default async function HomePage({
+  params,
+}: Promise<{ lang: SupportedLanguage }>) {
+  const { lang } = await params;
+  // [!code highlight:1]
+  return <div>{hello(lang)}</div>;
+}
+```
+
+## Other JSON files
+
+When the keys are from other JSON files, the file name is prefixed to the key. For example, if you have the following `locales/en/client.json` file:
+
+```json title="locales/en/client.json"
+{
+  "hello": "Hello"
+}
+```
+
+it will be converted to the following TypeScript code:
+
+```typescript
+export const clientHello = (lang: SupportedLanguage) => {
+  // content
+};
+```
+
+Which you can import in your components like this:
+
+```tsx title="page.tsx"
+import { SupportedLanguage } from '@/locales/.generated/types'; // adjust the path to the generated directory
+// [!code highlight:1]
+import { clientHello } from '@/locales/.generated/strings';
+
+export default async function HomePage({
+  params,
+}: Promise<{ lang: SupportedLanguage }>) {
+  const { lang } = await params;
+  // [!code highlight:1]
+  return <div>{clientHello(lang)}</div>;
+}
+```
+
+## Summary
+
+Every key in the JSON files is converted to camel case convention. The table below summarizes how the generated function names are derived:
+
+| Source File              | JSON Key             | Generated Function Name | Example Function Call         |
+| ------------------------ | -------------------- | ----------------------- | ----------------------------- |
+| messages.json (default)  | "hello"              | hello                   | `hello(lang)`                 |
+| client.json (other file) | "hello"              | clientHello             | `clientHello(lang)`           |
+| messages.json (default)  | "page.title"         | pageTitle               | `pageTitle(lang)`             |
+| messages.json (default)  | "page.section.title" | pageSectionTitle        | `pageSectionTitle(lang)`      |
+| client.json (other file) | "user.profile.name"  | clientUserProfileName   | `clientUserProfileName(lang)` |

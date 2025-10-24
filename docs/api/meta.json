@@ -1,0 +1,10 @@
+{
+  "title": "API",
+  "pages": [
+    "supported-languages",
+    "default-language",
+    "use-strings",
+    "string-keys",
+    "camel-case"
+  ]
+}

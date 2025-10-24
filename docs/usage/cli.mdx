@@ -1,0 +1,115 @@
+---
+title: CLI
+description: Command line interface usage
+---
+
+```bash
+  Usage
+    $ simple-i18n-next
+
+  Options
+    --input, -i <type> The path to the locales directory.  [Default: ./locales]
+    --default-language, -l <type> The default language to use.  [Default: the first directory in the locales directory]
+    --output, -o <type> The path to the output directory.  [Default: ./locales/.generated]
+    --silent, -s <type> Do not show any output.  [Default: false]
+
+  Examples
+    $ simple-i18n-next -i ./locales
+```
+
+## How to use the CLI
+
+1. Create a `locales` directory in your Next.js or React Router project. This directory will contain the translation files in JSON format and Markdown files.
+2. For each language you want to support, create a new directory in the `locales` directory. The name of the directory must be one of the [valid language codes](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry). For example, if you want to support English, French, and Italian, you will create the following directories: `en`, `fr`, and `it`.
+3. In each language directory, create a `messages.json` file. This file will contain the translations for the language. For example, you can create a `locales/en/messages.json` file that contains the following content:
+
+```json title="locales/en/messages.json"
+{
+  "hello": "Hello",
+  "welcome": "Welcome to {{name}}",
+  "about": "About",
+  "contact": "Contact",
+  "coming_soon": "Coming soon"
+}
+```
+
+and a `locales/de/messages.json` file that contains the following content:
+
+```json title="locales/de/messages.json"
+{
+  "hello": "Hallo",
+  "welcome": "Willkommen bei {{name}}",
+  "about": "Über",
+  "contact": "Kontakt",
+  "coming_soon": "Bald kommen"
+}
+```
+
+You can also add multiple JSON files in the same directory. For example, you can also have a `locales/en/client.json` file that contains the following content:
+
+```json title="locales/en/client.json"
+{
+  "hello": "Hello",
+  "welcome": "Welcome to {{name}}",
+  "about": "About",
+  "contact": "Contact",
+  "coming_soon": "Coming soon"
+}
+```
+
+If you do, you need to add the corresponding files in the other language directories.
+
+<Callout>You can have the same keys in different JSON files.</Callout>
+
+4. Inside each language directory, you can also add several markdown files. For example, you can create a `locales/en/about.mdx` file that contains the following content:
+
+```mdx title="locales/en/about.mdx"
+# About
+
+This is the about page.
+```
+
+and a `locales/de/about.mdx` file that contains the following content:
+
+```mdx title="locales/de/about.mdx"
+# Über
+
+Diese Seite ist die Übersicht.
+```
+
+5. Finally, run the `npx simple-i18n-next` command in your project directory. This command will generate TypeScript code inside the `locales/.generated` directory that you can use in your React components.
+
+6. You might need to add the generated directory to your `tsconfig.json` file:
+
+```json
+{
+  "include": ["locales/.generated/**/*"]
+}
+```
+
+7. Add the generated directory to your `.gitignore` file:
+
+```text
+locales/.generated
+```
+
+8. Update the package.json scripts to include the `simple-i18n-next` command and run it before the `dev` and `build` commands:
+
+```json title="package.json"
+{
+  "scripts": {
+    // [!code highlight:3]
+    "generate-locales": "simple-i18n-next -i ./locales -l en",
+    "dev": "npm run generate-locales && next dev",
+    "build": "npm run generate-locales && next build",
+    "start": "next start",
+    "test": "npm run check && npm run test:vitest"
+  }
+}
+```
+
+<Callout>
+  Note that if you don't specify the default language with the `-l` flag, the
+  first directory in the `locales` directory will be used as the default
+  language.
+</Callout>

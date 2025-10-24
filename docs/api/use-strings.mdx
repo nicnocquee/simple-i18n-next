@@ -1,0 +1,86 @@
+---
+title: useStrings hook
+---
+
+`useStrings` is a custom React hook to dynamically get the translations in a client component. **Note that you almost never need to use this hook.** You should use the generated functions in your components directly instead.
+
+## Parameters
+
+- `keys`: An array of string keys to be used in the component. The keys can only be those defined in `StringKeys`. If you pass unknown keys, TypeScript will throw an error.
+- `lang`: The language code to use for the translations. The value should be one of the supported language codes.
+
+## Returns
+
+Returns an array of exactly 3 elements in the following order:
+
+1. `strings`: An object of translated strings, excluding the plural keys and the keys with arguments.
+2. `plurals`: An object of functions that can be used to translate the plural keys.
+3. `stringsWithArgs`: An object of functions that can be used to translate the keys with arguments.
+
+## Example
+
+You have `locales/en/messages.json` and `locales/de/messages.json` files that contain the translations for the language like this:
+
+```json title="locales/en/messages.json"
+{
+  "hello": "Hello",
+  "greeting": "Hello {{name}}!",
+  "apple_one": "An apple",
+  "apple_other": "{{count}} apples",
+  "cat_ordinal_one": "1st cat",
+  "cat_ordinal_two": "2nd cat",
+  "cat_ordinal_few": "3rd cat",
+  "cat_ordinal_other": "{{count}}th cat"
+}
+```
+
+```json title="locales/de/messages.json"
+{
+  "hello": "Hallo",
+  "greeting": "Hallo {{name}}!",
+  "apple_one": "Ein Apfel",
+  "apple_other": "{{count}} Äpfel",
+  "cat_ordinal_other": "1. Katze"
+}
+```
+
+Then in the client component, you can use the `useStrings` hook like this:
+
+```tsx title="client/page.tsx"
+// [!code highlight:1]
+import { useStrings } from '@/locales/.generated/client/hooks'
+
+export default function ClientComponent() {
+  const lang = useSelectedLanguageFromPathname()
+  // [!code highlight:9]
+  const [strings, plurals, stringsWithArgs] = useStrings(
+    [
+      'hello',
+      'greeting',
+      'appleWithCount',
+      'catWithOrdinalCount',
+    ],
+    lang
+  )
+  if (!strings) return null
+  if (!plurals) return null
+  if (!stringsWithArgs) return null
+  return (
+    <div>
+      <h1>{strings.hello}</h1>
+      <p>{stringsWithArgs.greeting({name: 'John'})}</p>
+      <p>{plurals.appleWithCount(1)}</p>
+      <p>{plurals.appleWithCount(2)}</p>
+      <p>{plurals.appleWithCount(3)}</p>
+      <p>{plurals.appleWithCount(4)}</p>
+      <p>{plurals.appleWithCount(5)}</p>
+      <p>{plurals.catWithOrdinalCount(1)}</p>
+      <p>{plurals.catWithOrdinalCount(2)}</p>
+      <p>{plurals.catWithOrdinalCount(3)}</p>
+      <p>{plurals.catWithOrdinalCount(4)}</p>
+      <p>{plurals.catWithOrdinalCount(5)}</p>
+    </div>
+  )
+```
+
+In the example above, since the `greeting` key has arguments, it is only available in the `stringsWithArgs` object as a function that receives the arguments.
